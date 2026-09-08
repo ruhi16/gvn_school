@@ -1,0 +1,1 @@
+@include('livewire.partials.catalog-crud', ['title' => 'Subjects', 'singular' => 'subject', 'type' => 'subject', 'fields' => ['name' => 'Name', 'short_name' => 'Short name', 'desc' => 'Description', 'order_id' => 'Order', 'school_id' => 'School ID', 'session_id' => 'Session ID', 'is_active' => 'Status', 'remarks' => 'Remarks'], 'required' => ['name', 'short_name']])

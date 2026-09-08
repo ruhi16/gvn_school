@@ -16,11 +16,13 @@
                 </button>
                 <div x-show="open" x-cloak class="ml-7 space-y-1 border-l border-slate-800 pl-3">
                     <a href="#schools" class="block py-1.5 text-cyan-300">Schools</a>
-                    <a href="#schools" class="block py-1.5 hover:text-white">Sections</a>
-                    <a href="#schools" class="block py-1.5 hover:text-white">Subjects</a>
+                    <a href="#sessions" class="block py-1.5 hover:text-white">Sessions</a>
+                    <a href="#shrenies" class="block py-1.5 hover:text-white">Shrenies</a>
+                    <a href="#sections" class="block py-1.5 hover:text-white">Sections</a>
+                    <a href="#subjects" class="block py-1.5 hover:text-white">Subjects</a>
                 </div>
                 <a href="#" class="flex items-center gap-2 rounded px-3 py-2 hover:bg-slate-900">◉ <span>Students</span></a>
-                <a href="#" class="flex items-center gap-2 rounded px-3 py-2 hover:bg-slate-900">◇ <span>Teachers</span></a>
+                <a href="#teachers" class="flex items-center gap-2 rounded px-3 py-2 hover:bg-slate-900">◇ <span>Teachers</span></a>
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Administration</p>
                 <a href="{{ route('admin.users') }}" class="flex items-center gap-2 rounded px-3 py-2 hover:bg-slate-900">♙ <span>Users & roles</span></a>
                 <a href="#" class="flex items-center gap-2 rounded px-3 py-2 hover:bg-slate-900">⚙ <span>Settings</span></a>
@@ -42,6 +44,11 @@
                 <div id="schools" class="rounded-lg border border-slate-200 bg-white p-4">
                     <livewire:school-comp />
                 </div>
+                <div id="sessions" class="rounded-lg border border-slate-200 bg-white p-4"><livewire:session-comp /></div>
+                <div id="shrenies" class="rounded-lg border border-slate-200 bg-white p-4"><livewire:shreny-comp /></div>
+                <div id="sections" class="rounded-lg border border-slate-200 bg-white p-4"><livewire:section-comp /></div>
+                <div id="subjects" class="rounded-lg border border-slate-200 bg-white p-4"><livewire:subject-comp /></div>
+                <div id="teachers" class="rounded-lg border border-slate-200 bg-white p-4"><livewire:teacher-comp /></div>
             </main>
         </section>
     </div>
