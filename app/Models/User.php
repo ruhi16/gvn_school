@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use App\Enums\UserRole;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -22,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -33,6 +36,37 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function isAdmin(){
+        return $this->role === UserRole::ADMIN;
+    }
+
+    public function isStaff(){
+        return $this->role === UserRole::STAFF;
+    }
+
+    public function isTeacher(){
+        return $this->role === UserRole::TEACHER;
+    }
+
+    public function isStudent(){
+        return $this->role === UserRole::STUDENT;
+    }
+
+    public function isVisitor(){
+        return $this->role === UserRole::VISITOR;
+    }
+
+
+
+    public function hasRole($role){
+        return $this->role === $role;
+    }
+
+
+
+
+
 
     /**
      * Get the attributes that should be cast.
