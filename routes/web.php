@@ -20,10 +20,11 @@ Route::middleware('auth')->group(function () {
 
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])
-            ->name('admin.dashboard');
-        Route::get('/admin/users', [DashboardController::class, 'manageUsers'])
-            ->name('admin.users');
+        Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
+        Route::get('/admin/users', [DashboardController::class, 'manageUsers'])->name('admin.users');
+        
+
+
     });
 
     // Teacher only routes
