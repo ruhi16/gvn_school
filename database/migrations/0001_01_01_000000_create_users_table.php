@@ -18,6 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'staff', 'teacher', 'student', 'visitor'])->default('visitor');
+            $table->string('dp_url')->nullable();
+            $table->integer('school_id')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

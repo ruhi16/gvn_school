@@ -22,7 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
         Route::get('/admin/users', [DashboardController::class, 'manageUsers'])->name('admin.users');
-        
+        Route::view('/admin/shreny-sections', 'admin.shreny-sections')->name('admin.shreny-sections');
+
 
 
     });
@@ -52,4 +53,4 @@ Route::middleware('auth')->group(function () {
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

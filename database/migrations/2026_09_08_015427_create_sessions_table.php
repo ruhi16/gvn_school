@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,7 +19,7 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);
-            
+
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
             // $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');            
