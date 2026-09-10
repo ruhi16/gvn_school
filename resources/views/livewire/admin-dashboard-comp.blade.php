@@ -1,4 +1,4 @@
-<div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900" x-data="{ open: true, activeTab: 'overview' }">
+<div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900" x-data="{ open: true, examOpen: false, activeTab: 'overview' }">
     <div class="mx-auto flex max-w-[1600px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <aside class="w-56 shrink-0 border-r border-slate-200 bg-slate-950 text-slate-300">
             <div class="flex h-14 items-center gap-2 border-b border-slate-800 px-4">
@@ -38,12 +38,30 @@
                         class="block py-1.5 text-left">Sections</button>
                     <a href="{{ route('admin.shreny-sections') }}"
                         class="block py-1.5 text-left hover:text-white">Shreny assignments</a>
+                    <a href="{{ route('admin.shreny-subjects') }}"
+                        class="block py-1.5 text-left hover:text-white">Shreny subjects</a>
                     <button type="button" @click="activeTab = 'subjects'"
                         :class="activeTab === 'subjects' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
                         class="block py-1.5 text-left">Subjects</button>
                     <button type="button" @click="activeTab = 'teachers'"
                         :class="activeTab === 'teachers' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
                         class="block py-1.5 text-left">Teachers</button>
+                </div>
+
+                <button type="button"
+                    class="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-slate-900"
+                    @click="examOpen = !examOpen">
+                    <span class="flex items-center gap-2"><span>▣</span><span>Exam Settings</span></span>
+                    <span x-text="examOpen ? '−' : '+'"></span>
+                </button>
+                <div x-show="examOpen" x-cloak class="ml-7 space-y-1 border-l border-slate-800 pl-3">
+                    <p class="py-1.5 font-semibold text-slate-500">Exam Basics</p>
+                    <a href="{{ route('admin.exam-names') }}" class="block py-1.5 text-left hover:text-white">Exam Name</a>
+                    <a href="{{ route('admin.exam-types') }}" class="block py-1.5 text-left hover:text-white">Exam Type</a>
+                    <a href="{{ route('admin.exam-parts') }}" class="block py-1.5 text-left hover:text-white">Exam Parts</a>
+                    <a href="{{ route('admin.exam-modes') }}" class="block py-1.5 text-left hover:text-white">Exam Mode</a>
+                    <a href="{{ route('admin.exam-grades') }}" class="block py-1.5 text-left hover:text-white">Exam Grade</a>
+                    <a href="{{ route('admin.exam-details') }}" class="block py-1.5 text-left hover:text-white">Exam Details</a>
                 </div>
 
                 <button type="button" @click="activeTab = 'students'"

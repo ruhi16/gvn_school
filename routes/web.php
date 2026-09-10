@@ -23,6 +23,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
         Route::get('/admin/users', [DashboardController::class, 'manageUsers'])->name('admin.users');
         Route::view('/admin/shreny-sections', 'admin.shreny-sections')->name('admin.shreny-sections');
+        Route::view('/admin/shreny-subjects', 'admin.shreny-subjects')->name('admin.shreny-subjects');
+        Route::view('/admin/exam-settings', 'admin.exam-settings')->name('admin.exam-settings');
+        Route::view('/admin/exam-settings/exam-names', 'admin.exam-names')->name('admin.exam-names');
+        Route::view('/admin/exam-settings/exam-types', 'admin.exam-types')->name('admin.exam-types');
+        Route::view('/admin/exam-settings/exam-parts', 'admin.exam-parts')->name('admin.exam-parts');
+        Route::view('/admin/exam-settings/exam-modes', 'admin.exam-modes')->name('admin.exam-modes');
+        Route::view('/admin/exam-settings/exam-grades', 'admin.exam-grades')->name('admin.exam-grades');
+        Route::view('/admin/exam-settings/details', 'admin.exam-details')->name('admin.exam-details');
 
 
 

@@ -41,9 +41,18 @@
     </nav>
 
     <main class="min-h-screen bg-slate-50 py-6">
+        @if(request()->routeIs('admin.exam*'))
+        <div class="mx-auto flex max-w-[1600px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            @include('admin.partials.sidebar')
+            <div class="min-w-0 flex-1 px-4 sm:px-6 lg:px-8 py-6">
+                @yield('content')
+            </div>
+        </div>
+        @else
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             @yield('content')
         </div>
+        @endif
     </main>
     @livewireScripts
 </body>
