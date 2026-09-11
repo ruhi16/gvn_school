@@ -13,13 +13,13 @@ return new class extends Migration {
         Schema::create('sessions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('description')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->integer('order_id')->nullable();
             $table->string('status')->nullable();
+            
             $table->integer('school_id')->nullable();
-            $table->integer('session_id')->nullable()->default(null);
-
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
             // $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');            

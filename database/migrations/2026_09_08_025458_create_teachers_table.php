@@ -31,9 +31,9 @@ return new class extends Migration
             $table->string('block')->nullable();
             $table->string('pincode')->nullable();
             $table->integer('order_id')->nullable();
+            
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);
-
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
             // $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');

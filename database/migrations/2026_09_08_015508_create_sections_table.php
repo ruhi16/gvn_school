@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('desc')->nullable();
+            $table->string('description')->nullable();
             $table->integer('order_id')->nullable();
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);

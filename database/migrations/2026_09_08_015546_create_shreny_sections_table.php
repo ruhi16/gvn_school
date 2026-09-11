@@ -16,6 +16,8 @@ return new class extends Migration
             $table->integer('shreny_id')->nullable();
             $table->integer('section_id')->nullable();
             $table->integer('order_id')->nullable();
+
+            
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);
             $table->boolean('is_active')->default(true);

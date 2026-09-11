@@ -30,6 +30,15 @@ return new class extends Migration
             $table->string('district')->nullable();
             $table->string('block')->nullable();
             $table->string('pincode')->nullable();
+
+            $table->integer('adm_shreny_id')->nullable();
+            $table->integer('adm_section_id')->nullable();
+
+            $table->integer('order_id')->nullable();
+            $table->integer('school_id')->nullable();
+            $table->integer('session_id')->nullable()->default(null);
+            $table->boolean('is_active')->default(true);
+            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }

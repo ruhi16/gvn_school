@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('student_crs', function (Blueprint $table) {
             $table->id();
             $table->integer('studentdb_id')->nullable();
-            $table->integer('shreny_id')->nullable();            
-            $table->integer('section_id')->nullable();
-            $table->integer('roll_no')->nullable();
+            $table->integer('curr_shreny_id')->nullable();            
+            $table->integer('curr_section_id')->nullable();
+            $table->integer('curr_roll_no')->nullable();
 
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);

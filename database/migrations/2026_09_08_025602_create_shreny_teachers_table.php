@@ -16,10 +16,10 @@ return new class extends Migration
             $table->integer('shreny_id')->nullable();
             $table->integer('teacher_id')->nullable();
             $table->integer('order_id')->nullable();
+            $table->enum('teacher_type', ['class_teacher', 'subject_teacher', 'other'])->nullable();
+            
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);
-            $table->enum('teacher_type', ['class_teacher', 'subject_teacher', 'other'])->nullable();
-
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
             // $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');

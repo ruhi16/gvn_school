@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('short_name')->nullable();
+            $table->string('description')->nullable();
             $table->string('dise_code')->nullable();
             $table->string('udise_code')->nullable();
             $table->string('school_type')->nullable();
@@ -23,6 +25,7 @@ return new class extends Migration
             $table->string('district')->nullable();
             $table->string('block')->nullable();
             $table->string('pincode')->nullable();
+            
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
             $table->timestamps();
