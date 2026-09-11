@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
         Route::view('/admin/exam-settings/exam-modes', 'admin.exam-modes')->name('admin.exam-modes');
         Route::view('/admin/exam-settings/exam-grades', 'admin.exam-grades')->name('admin.exam-grades');
         Route::view('/admin/exam-settings/details', 'admin.exam-details')->name('admin.exam-details');
+        Route::view('/admin/exam-settings/marks', 'admin.exam-marks')->name('admin.exam-marks');
 
 
 

@@ -33,6 +33,7 @@ $examSettingsActive = request()->routeIs('admin.exam*');
             <a href="{{ route('admin.exam-modes') }}" class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-modes') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam Mode</a>
             <a href="{{ route('admin.exam-grades') }}" class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-grades') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam Grade</a>
             <a href="{{ route('admin.exam-details') }}" class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-details') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam Details</a>
+            <a href="{{ route('admin.exam-marks') }}" class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-marks') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Marks & time</a>
         </div>
 
         <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Administration</p>
