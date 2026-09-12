@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('short_name');
             $table->string('description')->nullable();
+            
+            $table->integer('subject_type_id')->nullable();
             $table->integer('order_id')->nullable();
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable()->default(null);

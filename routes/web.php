@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Models\StudentDb;
 use Illuminate\Support\Facades\Route;
 
 
@@ -32,6 +33,9 @@ Route::middleware('auth')->group(function () {
         Route::view('/admin/exam-settings/exam-grades', 'admin.exam-grades')->name('admin.exam-grades');
         Route::view('/admin/exam-settings/details', 'admin.exam-details')->name('admin.exam-details');
         Route::view('/admin/exam-settings/marks', 'admin.exam-marks')->name('admin.exam-marks');
+        Route::view('/admin/students', 'admin.students')->name('admin.students');
+        Route::get('/admin/students/new', fn() => view('admin.student-form'))->name('admin.students.create');
+        Route::get('/admin/students/{studentDb}/edit', fn(StudentDb $studentDb) => view('admin.student-form', compact('studentDb')))->name('admin.students.edit');
 
 
 
