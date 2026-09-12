@@ -116,7 +116,7 @@
                         <th class="px-3 py-2">Father / guardian</th>
                         <th class="px-3 py-2">Admission ID</th>
                         <th class="px-3 py-2">Roll no.</th>
-                        <th class="px-3 py-2"></th>
+                        <th class="px-3 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">@forelse($students as $student)<tr>
@@ -124,10 +124,20 @@
                         <td class="px-3 py-2 text-slate-600">{{ $student->fname ?: '-' }}</td>
                         <td class="px-3 py-2 text-slate-500">#{{ $student->id }}</td>
                         <td class="px-3 py-2"><input wire:model="rollNumbers.{{ $student->id }}" type="number" min="1"
-                                class="w-24 rounded border-slate-300 px-2 py-1.5 text-xs" placeholder="Unassigned"></td>
-                        <td class="px-3 py-2 text-right">@if(isset($assignedRolls[$student->id]))<button type="button"
-                                wire:click="removeAssignment({{ $student->id }})"
-                                class="font-semibold text-rose-600 hover:text-rose-500">Remove</button>@endif</td>
+                                class="w-24 rounded border-slate-300 px-2 py-1.5 text-xs" placeholder="Unassigned">
+                            @error("rollNumbers.{$student->id}")<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                        </td>
+                        <td class="px-3 py-2 text-right">
+                            <div class="flex justify-end gap-3">
+                                <button type="button" wire:click="updateRollNumber({{ $student->id }})"
+                                    class="font-semibold text-cyan-700 hover:text-cyan-600">Update</button>
+                                <a href="{{ route('admin.students.pdf', $student) }}" target="_blank" rel="noopener"
+                                    class="font-semibold text-slate-600 hover:text-slate-900">PDF</a>
+                                @if(isset($assignedRolls[$student->id]))<button type="button"
+                                    wire:click="removeAssignment({{ $student->id }})"
+                                    class="font-semibold text-rose-600 hover:text-rose-500">Remove</button>@endif
+                            </div>
+                        </td>
                     </tr>@empty<tr>
                         <td colspan="5" class="px-3 py-8 text-center text-sm text-slate-500">No active admissions match
                             this Shreny and Section.</td>

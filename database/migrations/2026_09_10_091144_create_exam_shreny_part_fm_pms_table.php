@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('exam_shreny_part_fm_pms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->uniqidue('unique_id');
             $table->string('description')->nullable();
 
             $table->integer('shreny_id')->nullable();

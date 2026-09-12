@@ -7,6 +7,7 @@ use App\Models\Shreny;
 use App\Models\ShrenySection;
 use App\Models\StudentCr;
 use App\Models\StudentDb;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ShrenySectionComp extends Component
@@ -89,11 +90,40 @@ class ShrenySectionComp extends Component
         }
 
         foreach ($students as $student) {
-            $this->saveStudentCr($student, $rolls[$student->id]);
+            if (!$this->rollNumberIsAvailable($rolls[$student->id], $student->id)) {
+                $this->addError('rollNumbers', "Roll number {$rolls[$student->id]} is already assigned in this Shreny and Section.");
+                return;
+            }
         }
+
+        DB::transaction(function () use ($students, $rolls): void {
+            foreach ($students as $student) {
+                $this->saveStudentCr($student, $rolls[$student->id]);
+            }
+        });
 
         $this->resetErrorBag();
         session()->flash('success', 'Manual roll numbers saved.');
+    }
+
+    public function updateRollNumber(int $studentId): void
+    {
+        $student = $this->selectedStudents()->firstWhere('id', $studentId);
+        $rollNumber = (int) ($this->rollNumbers[$studentId] ?? 0);
+
+        if (!$student || $rollNumber < 1) {
+            $this->addError("rollNumbers.{$studentId}", 'Enter a valid roll number.');
+            return;
+        }
+
+        if (!$this->rollNumberIsAvailable($rollNumber, $studentId)) {
+            $this->addError("rollNumbers.{$studentId}", 'This roll number is already assigned in this Shreny and Section.');
+            return;
+        }
+
+        $this->saveStudentCr($student, $rollNumber);
+        $this->resetErrorBag("rollNumbers.{$studentId}");
+        session()->flash('success', "Roll number updated for {$student->name}.");
     }
 
     public function removeAssignment(int $studentId): void
@@ -158,6 +188,16 @@ class ShrenySectionComp extends Component
                 'is_active' => true,
             ]
         );
+    }
+
+    private function rollNumberIsAvailable(int $rollNumber, int $studentId): bool
+    {
+        return !StudentCr::query()
+            ->where('curr_shreny_id', $this->selectedShrenyId)
+            ->where('curr_section_id', $this->selectedSectionId)
+            ->where('curr_roll_no', $rollNumber)
+            ->where('studentdb_id', '!=', $studentId)
+            ->exists();
     }
 
     public function render()

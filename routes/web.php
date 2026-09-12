@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Models\StudentDb;
 use Illuminate\Support\Facades\Route;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 
 Route::get('/', function () {
@@ -36,6 +37,18 @@ Route::middleware('auth')->group(function () {
         Route::view('/admin/students', 'admin.students')->name('admin.students');
         Route::get('/admin/students/new', fn() => view('admin.student-form'))->name('admin.students.create');
         Route::get('/admin/students/{studentDb}/edit', fn(StudentDb $studentDb) => view('admin.student-form', compact('studentDb')))->name('admin.students.edit');
+        Route::get('/admin/students/{studentDb}/pdf', function (StudentDb $studentDb) {
+            return Pdf::view('pdfs.student', [
+                'student' => $studentDb->load(['classRecords.shreny', 'classRecords.section']),
+            ])->format('a4')
+                ->withBrowsershot(function ($browsershot) {
+                    $browsershot
+                        ->setChromePath('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
+                        ->setNodeModulePath(base_path('node_modules'))
+                        ->noSandbox();
+                })
+                ->name("student-{$studentDb->id}.pdf");
+        })->name('admin.students.pdf');
 
 
 
