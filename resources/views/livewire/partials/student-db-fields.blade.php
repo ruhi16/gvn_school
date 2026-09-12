@@ -26,10 +26,12 @@
         <div class="space-y-3">@foreach([['dpImage','dp_img_ref','Profile
             photo'],['dobCertificate','dob_cert_img_ref','DOB certificate'],['aadhaarImage','aadhaar_img_ref','Aadhaar
             card']] as [$upload, $ref, $label])<label class="block"><span class="field-label">{{ $label
-                    }}</span>@if($this->{$ref})<a href="{{ Storage::disk('public')->url($this->{$ref}) }}"
-                    target="_blank" class="mb-1 block text-[10px] text-cyan-700">View current image</a>@endif<input
-                    wire:model="{{ $upload }}" type="file" accept="image/*" class="{{ $input }}">@error($upload)<span
-                    class="field-error">{{ $message }}</span>@enderror</label>@endforeach</div>
+                }}</span>@if($this->{$upload})<img src="{{ $this->{$upload}->temporaryUrl() }}"
+                class="mb-2 h-32 w-32 rounded border border-slate-200 object-cover" alt="Selected {{ strtolower($label) }} preview">
+                @elseif($this->{$ref})<a href="{{ Storage::disk('public')->url($this->{$ref}) }}"
+                target="_blank" class="mb-1 block text-[10px] text-cyan-700">View current image</a>@endif<input
+                wire:model="{{ $upload }}" type="file" accept="image/*" class="{{ $input }}">@error($upload)<span
+                class="field-error">{{ $message }}</span>@enderror</label>@endforeach</div>
     </section>
     <section class="rounded border border-slate-200 bg-white p-4 shadow-sm lg:col-span-2">
         <h2 class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-700">Address & contact</h2>
