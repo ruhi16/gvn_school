@@ -7,7 +7,6 @@ use App\Models\ExamPart;
 use App\Models\ExamShrenyPartFmPm;
 use App\Models\ExamType;
 use App\Models\Shreny;
-use App\Models\ShrenySubject;
 use App\Models\Subject;
 use Livewire\Component;
 
@@ -28,20 +27,13 @@ class ExamMarksSettings extends Component
         abort_if($value !== '' && $value !== null && $validatedValue === null, 422);
         abort_if($validatedValue !== null && $validatedValue < 0, 422);
 
-        $mapping = ExamShrenyPartFmPm::query()->firstOrCreate(
-            [
-                'shreny_id' => $shrenyId,
-                'subject_id' => $subjectId,
-                'exam_name_id' => $configuration->exam_name_id,
-                'exam_type_id' => $configuration->exam_type_id,
-                'exam_part_id' => $configuration->exam_part_id,
-            ],
-            [
-                'name' => 'Shreny subject configuration',
-                'exam_mode_id' => $configuration->exam_mode_id,
-                'is_active' => true,
-            ],
-        );
+        $mapping = ExamShrenyPartFmPm::query()
+            ->where('shreny_id', $shrenyId)
+            ->where('subject_id', $subjectId)
+            ->where('exam_name_id', $configuration->exam_name_id)
+            ->where('exam_type_id', $configuration->exam_type_id)
+            ->where('exam_part_id', $configuration->exam_part_id)
+            ->firstOrFail();
 
         $mapping->update([$field => $validatedValue]);
     }
@@ -53,12 +45,9 @@ class ExamMarksSettings extends Component
         $examParts = ExamPart::query()->where('is_active', true)->orderBy('order_id')->orderBy('name')->get()->keyBy('id');
         $shrenies = Shreny::query()->where('is_active', true)->orderBy('order_id')->orderBy('name')->get();
         $subjects = Subject::query()->where('is_active', true)->orderBy('order_id')->orderBy('name')->get()->keyBy('id');
-        $shrenySubjects = ShrenySubject::query()->where('is_active', true)->get(['shreny_id', 'subject_id']);
-        $examSubjectAssignments = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')
+        $shrenySubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')
             ->get(['shreny_id', 'subject_id']);
-        $shrenySubjects = $shrenySubjects->concat($examSubjectAssignments)
-            ->unique(fn ($row) => $row->shreny_id . ':' . $row->subject_id)
-            ->groupBy('shreny_id');
+        $shrenySubjects = $shrenySubjects->unique(fn ($row) => $row->shreny_id . ':' . $row->subject_id)->groupBy('shreny_id');
         $configurations = ExamShrenyPartFmPm::query()
             ->whereNull('shreny_id')->whereNull('subject_id')->whereNotNull('exam_part_id')
             ->orderBy('exam_name_id')->orderBy('exam_type_id')->orderBy('exam_part_id')->get();

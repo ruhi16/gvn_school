@@ -11,6 +11,7 @@ use App\Models\School;
 use App\Models\Session;
 use App\Models\Shreny;
 use App\Models\Section;
+use App\Models\ShrenySection;
 use App\Models\Subject;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -380,6 +381,83 @@ class UserSeeder extends Seeder
             'session_id' => 1,
             'is_active' => true,
             'remarks' => 'This is a sample exam mode.',
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 1,
+            'section_id' => 1,
+            'order_id' => 1,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 2,
+            'section_id' => 1,
+            'order_id' => 2,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 3,
+            'section_id' => 1,
+            'order_id' => 3,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 4,
+            'section_id' => 1,
+            'order_id' => 4,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 5,
+            'section_id' => 1,
+            'order_id' => 5,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 6,
+            'section_id' => 1,
+            'order_id' => 6,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        ShrenySection::create([
+            'shreny_id' => 7,
+            'section_id' => 1,
+            'order_id' => 7,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample shreny-section association.',
+            'updated_at' => now(),
+            'created_at' => now(),
         ]);
 
     }

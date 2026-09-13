@@ -100,6 +100,53 @@ class ExamSettings extends Component
         ]);
     }
 
+    public function toggleShrenySubject(int $shrenyId, int $subjectId): void
+    {
+        ShrenySubject::query()->firstOrCreate([
+            'shreny_id' => $shrenyId,
+            'subject_id' => $subjectId,
+        ], [
+            'is_active' => true,
+        ]);
+
+        $configurations = ExamShrenyPartFmPm::query()
+            ->whereNull('shreny_id')
+            ->whereNull('subject_id')
+            ->whereNotNull('exam_part_id')
+            ->get();
+
+        $allSelected = $configurations->isNotEmpty()
+            && $configurations->every(fn ($configuration) => ExamShrenyPartFmPm::query()
+                ->where('shreny_id', $shrenyId)
+                ->where('subject_id', $subjectId)
+                ->where('exam_name_id', $configuration->exam_name_id)
+                ->where('exam_type_id', $configuration->exam_type_id)
+                ->where('exam_part_id', $configuration->exam_part_id)
+                ->exists());
+
+        if ($allSelected) {
+            ExamShrenyPartFmPm::query()
+                ->where('shreny_id', $shrenyId)
+                ->where('subject_id', $subjectId)
+                ->delete();
+            return;
+        }
+
+        foreach ($configurations as $configuration) {
+            ExamShrenyPartFmPm::firstOrCreate([
+                'shreny_id' => $shrenyId,
+                'subject_id' => $subjectId,
+                'exam_name_id' => $configuration->exam_name_id,
+                'exam_type_id' => $configuration->exam_type_id,
+                'exam_part_id' => $configuration->exam_part_id,
+            ], [
+                'name' => 'Shreny subject configuration',
+                'exam_mode_id' => $configuration->exam_mode_id,
+                'is_active' => true,
+            ]);
+        }
+    }
+
     private function ensureExamType(int $examNameId, int $examTypeId): void
     {
         if (!ExamShrenyPartFmPm::query()
@@ -157,7 +204,22 @@ class ExamSettings extends Component
             ->map(fn ($rows) => $rows->keyBy('exam_part_id'))->all();
         $assignedSubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get()
             ->groupBy(fn ($row) => $row->shreny_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id)->all();
+        $shrenySubjects = ShrenySubject::query()
+            ->where('is_active', true)
+            ->whereIn('shreny_id', $shrenies->pluck('id'))
+            ->whereIn('subject_id', $subjects->pluck('id'))
+            ->get()
+            ->groupBy('shreny_id')
+            ->map(fn ($mappings) => $mappings->sortBy(function ($mapping) use ($subjects) {
+                $subject = $subjects->firstWhere('id', $mapping->subject_id);
 
-        return view('livewire.exam-settings', compact('examNames', 'examTypes', 'examParts', 'examModes', 'shrenies', 'subjects', 'configurations', 'typeIds', 'selectedParts', 'assignedSubjects'));
+                return [
+                    $subject?->subject_type_id ?? PHP_INT_MAX,
+                    $subject?->order_id ?? PHP_INT_MAX,
+                    $subject?->name ?? '',
+                ];
+            }));
+
+        return view('livewire.exam-settings', compact('examNames', 'examTypes', 'examParts', 'examModes', 'shrenies', 'subjects', 'configurations', 'typeIds', 'selectedParts', 'assignedSubjects', 'shrenySubjects'));
     }
 }

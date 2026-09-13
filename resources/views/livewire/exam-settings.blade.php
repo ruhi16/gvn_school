@@ -1,7 +1,7 @@
 <div class="space-y-8">
     <section>
         <header class="mb-4 border-b border-slate-200 pb-4">
-            <h2 class="text-lg font-semibold text-slate-950">Exam type and part setup</h2>
+            <h2 class="text-lg font-semibold text-slate-950">Exam type and Exam part setup</h2>
             <p class="mt-1 text-sm text-slate-500">Select exam types, then choose their parts and mode.</p>
         </header>
         <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -39,6 +39,68 @@
 
     <section>
         <header class="mb-4 border-b border-slate-200 pb-4"><h2 class="text-lg font-semibold text-slate-950">Shreny exam subjects</h2><p class="mt-1 text-sm text-slate-500">Assign subjects for each configured exam part.</p></header>
-        <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white"><table class="min-w-[70rem] text-left text-sm"><thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500"><tr><th class="w-14 px-3 py-3">SL</th><th class="sticky left-0 min-w-36 bg-slate-50 px-3 py-3">Shreny</th>@foreach ($configurations as $configuration)<th class="min-w-36 px-3 py-3"><span class="block text-slate-900">{{ $examNames->firstWhere('id', $configuration->exam_name_id)?->name }}</span><span class="font-normal">{{ $examTypes->firstWhere('id', $configuration->exam_type_id)?->name }} / {{ $examParts->firstWhere('id', $configuration->exam_part_id)?->name }}</span>@if ($configuration->exam_mode_id)<span class="block font-normal text-cyan-700">{{ $examModes->firstWhere('id', $configuration->exam_mode_id)?->name }}</span>@endif</th>@endforeach</tr></thead><tbody class="divide-y divide-slate-100">@forelse ($shrenies as $shreny)<tr wire:key="settings-shreny-{{ $shreny->id }}" class="align-top"><td class="px-3 py-4 text-slate-500">{{ $loop->iteration }}</td><td class="sticky left-0 bg-white px-3 py-4 font-semibold text-slate-900">{{ $shreny->name }}</td>@foreach ($configurations as $configuration)@php($assignedKey = $shreny->id . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id)<td class="px-3 py-3"><div class="space-y-1">@foreach ($subjects as $subject)<label class="flex cursor-pointer items-center gap-2 whitespace-nowrap"><input type="checkbox" wire:click="toggleSubject({{ $configuration->id }}, {{ $shreny->id }}, {{ $subject->id }})" @checked(isset($assignedSubjects[$assignedKey]) && $assignedSubjects[$assignedKey]->contains('subject_id', $subject->id)) class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"><span>{{ $subject->name }}</span></label>@endforeach</div></td>@endforeach</tr>@empty<tr><td colspan="{{ 2 + $configurations->count() }}" class="px-5 py-10 text-center text-sm text-slate-500">No shrenies available.</td></tr>@endforelse</tbody></table></div>
+        <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+            <table class="min-w-[70rem] text-left text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                    <tr>
+                        <th class="w-14 px-3 py-3">SL</th>
+                        <th class="sticky left-0 min-w-36 bg-slate-50 px-3 py-3">Shreny</th>
+                        <th class="sticky left-36 min-w-48 bg-slate-50 px-3 py-3">Subjects</th>
+                        @foreach ($configurations as $configuration)
+                            <th class="min-w-36 px-3 py-3">
+                                <span class="block text-slate-900">{{ $examNames->firstWhere('id', $configuration->exam_name_id)?->name }}</span>
+                                <span class="font-normal">{{ $examTypes->firstWhere('id', $configuration->exam_type_id)?->name }} / {{ $examParts->firstWhere('id', $configuration->exam_part_id)?->name }}</span>
+                                @if ($configuration->exam_mode_id)
+                                    <span class="block font-normal text-cyan-700">{{ $examModes->firstWhere('id', $configuration->exam_mode_id)?->name }}</span>
+                                @endif
+                            </th>
+                        @endforeach
+                    </tr>
+                        </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse ($shrenies as $shreny)
+                                    @php($mappedSubjects = $shrenySubjects[$shreny->id] ?? collect())
+                                    @foreach ($mappedSubjects as $shrenySubject)
+                                        @php($subject = $subjects->firstWhere('id', $shrenySubject->subject_id))
+                                        @if ($subject)
+                                            <tr wire:key="settings-{{ $shreny->id }}-{{ $subject->id }}" class="align-top">
+                                                @if ($loop->first)
+                                                    <td rowspan="{{ $mappedSubjects->count() }}" class="px-3 py-4 text-slate-500">{{ $loop->parent->iteration }}</td>
+                                                    <td rowspan="{{ $mappedSubjects->count() }}" class="sticky left-0 bg-white px-3 py-4 font-semibold text-slate-900">{{ $shreny->name }}</td>
+                                                @endif
+                                                <td class="sticky left-36 bg-white px-3 py-3">
+                                                    <label class="flex cursor-pointer items-center gap-2">
+                                                        <input type="checkbox" wire:click="toggleShrenySubject({{ $shreny->id }}, {{ $subject->id }})" @checked($configurations->isNotEmpty() && $configurations->every(fn ($configuration) => isset($assignedSubjects[$shreny->id . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id]) && $assignedSubjects[$shreny->id . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id]->contains('subject_id', $subject->id))) class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500">
+                                                        <span>{{ $subject->name }}</span>
+                                                    </label>
+                                                </td>
+                                                @foreach ($configurations as $configuration)
+                                                    @php($assignedKey = $shreny->id . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id)
+                                                    <td class="px-3 py-3">
+                                                        <label class="flex cursor-pointer items-center gap-2 whitespace-nowrap">
+                                                            <input type="checkbox" wire:click="toggleSubject({{ $configuration->id }}, {{ $shreny->id }}, {{ $subject->id }})" @checked(isset($assignedSubjects[$assignedKey]) && $assignedSubjects[$assignedKey]->contains('subject_id', $subject->id)) class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500">
+                                                            <span>{{ $subject->name }}</span>
+                                                        </label>
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                    @if ($mappedSubjects->isEmpty())
+                                        <tr wire:key="settings-shreny-empty-{{ $shreny->id }}" class="align-top">
+                                            <td class="px-3 py-4 text-slate-500">{{ $loop->iteration }}</td>
+                                            <td class="sticky left-0 bg-white px-3 py-4 font-semibold text-slate-900">{{ $shreny->name }}</td>
+                                            <td colspan="{{ 1 + $configurations->count() }}" class="px-3 py-4 text-slate-500">No subjects selected.</td>
+                                        </tr>
+                                    @endif
+                                @empty
+                                <tr>
+                                    <td colspan="{{ 3 + $configurations->count() }}" class="px-5 py-10 text-center text-sm text-slate-500">No shrenies available.</td>
+
+                                </tr>
+                                @endforelse
+                            </tbody>
+            </table>
+        </div>
     </section>
 </div>

@@ -1,4 +1,4 @@
 @extends('layouts.app')
 @section('content')
-<livewire:exam-type-comp />
+<livewire:admin-dashboard-comp active-panel="exam-basics" />
 @endsection

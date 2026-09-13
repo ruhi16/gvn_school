@@ -1,4 +1,4 @@
 @extends('layouts.app')
 @section('content')
-<livewire:student-db-comp />
+<livewire:admin-dashboard-comp active-panel="students" />
 @endsection

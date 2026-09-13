@@ -10,6 +10,18 @@ use Livewire\Component;
 
 class AdminDashboardComp extends Component
 {
+    public string $activePanel = 'overview';
+
+    public function mount(string $activePanel = 'overview'): void
+    {
+        $this->activePanel = $activePanel;
+    }
+
+    public function selectPanel(string $panel): void
+    {
+        $this->activePanel = $panel;
+    }
+
     public function render()
     {
         return view('livewire.admin-dashboard-comp', [

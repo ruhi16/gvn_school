@@ -19,10 +19,6 @@
                 <span class="hidden text-slate-300 sm:inline">Welcome, {{ Auth::user()->name }}</span>
                 @if(Auth::user()->isAdmin())
                 <a class="font-medium hover:text-cyan-300" href="{{ route('admin.dashboard') }}">Admin Panel</a>
-                <a class="font-medium {{ request()->routeIs('admin.students*') ? 'text-cyan-300' : 'hover:text-cyan-300' }}"
-                    href="{{ route('admin.students') }}">StudentDB</a>
-                <a class="font-medium {{ request()->routeIs('admin.shreny-sections') ? 'text-cyan-300' : 'hover:text-cyan-300' }}"
-                    href="{{ route('admin.shreny-sections') }}">Shreny Section Tasks</a>
                 @endif
                 @if(Auth::user()->isTeacher())
                 <a class="font-medium hover:text-cyan-300" href="{{ route('teacher.dashboard') }}">Teacher Panel</a>
@@ -45,18 +41,9 @@
     </nav>
 
     <main class="min-h-screen bg-slate-50 py-6">
-        @if(request()->routeIs('admin.exam*') || request()->routeIs('admin.students*'))
-        <div class="mx-auto flex max-w-[1600px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            @include('admin.partials.sidebar')
-            <div class="min-w-0 flex-1 px-4 sm:px-6 lg:px-8 py-6">
-                @yield('content')
-            </div>
-        </div>
-        @else
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             @yield('content')
         </div>
-        @endif
     </main>
     @livewireScripts
 </body>

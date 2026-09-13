@@ -51,6 +51,8 @@ Route::middleware('auth')->group(function () {
         })->name('admin.students.pdf');
 
 
+        Route::view('/admin/studentcrs', 'admin.studentcrs')->name('admin.studentcrs');
+
 
     });
 

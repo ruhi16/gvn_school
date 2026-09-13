@@ -35,11 +35,15 @@
                             @php($key = $shreny->id . ':' . $shrenySubject->subject_id . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id)
                             @php($mark = $marks[$key] ?? null)
                             <td class="px-3 py-3">
+                                @if ($mark)
                                 <div class="grid grid-cols-3 gap-2">
                                     <label class="text-[10px] font-semibold uppercase text-slate-500">Full<input type="number" min="0" step="1" value="{{ $mark?->full_marks }}" wire:change="updateMarks({{ $configuration->id }}, {{ $shreny->id }}, {{ $shrenySubject->subject_id }}, 'full_marks', $event.target.value)" class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
                                     <label class="text-[10px] font-semibold uppercase text-slate-500">Pass<input type="number" min="0" step="1" value="{{ $mark?->pass_marks }}" wire:change="updateMarks({{ $configuration->id }}, {{ $shreny->id }}, {{ $shrenySubject->subject_id }}, 'pass_marks', $event.target.value)" class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
                                     <label class="text-[10px] font-semibold uppercase text-slate-500">Minutes<input type="number" min="0" step="1" value="{{ $mark?->time_alloted }}" wire:change="updateMarks({{ $configuration->id }}, {{ $shreny->id }}, {{ $shrenySubject->subject_id }}, 'time_alloted', $event.target.value)" class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
                                 </div>
+                                @else
+                                <span class="text-xs text-slate-400">Not selected</span>
+                                @endif
                             </td>
                             @endforeach
                         </tr>

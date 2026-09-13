@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-<livewire:shreny-section-comp />
+<livewire:admin-dashboard-comp active-panel="shreny-sections" />
 @endsection

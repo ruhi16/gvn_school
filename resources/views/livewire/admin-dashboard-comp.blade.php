@@ -1,6 +1,16 @@
-<div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900" x-data="{ open: true, examOpen: false, activeTab: 'overview' }">
+@php
+$panelTitles = [
+'overview' => 'Overview', 'students' => 'Student admissions', 'student-crs' => 'Shreny & Section students',
+'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies', 'section' => 'Sections',
+'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
+'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
+'exam-combinations' => 'Exam combination settings', 'exam-script-distribution' => 'Exam script distribution',
+'exam-marks-entry' => 'Exam marks entry',
+];
+@endphp
+<div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900">
     <div class="mx-auto flex max-w-[1600px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <aside class="w-56 shrink-0 border-r border-slate-200 bg-slate-950 text-slate-300">
+        <aside class="w-60 shrink-0 border-r border-slate-200 bg-slate-950 text-slate-300">
             <div class="flex h-14 items-center gap-2 border-b border-slate-800 px-4">
                 <div class="grid h-7 w-7 place-items-center rounded bg-cyan-400 text-xs font-bold text-slate-950">GV
                 </div>
@@ -10,147 +20,118 @@
                 </div>
             </div>
             <nav class="space-y-1 p-3 text-xs">
-                <button type="button" @click="activeTab = 'overview'"
-                    :class="activeTab === 'overview' ? 'bg-slate-800 text-cyan-300 font-semibold' : 'hover:bg-slate-900'"
-                    class="flex w-full items-center gap-2 rounded px-3 py-2 text-left">
-                    ⌂ <span>Overview</span>
-                </button>
-
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Academic</p>
-                <button type="button"
-                    class="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-slate-900"
-                    @click="open = !open">
-                    <span class="flex items-center gap-2">▦ <span>School data</span></span><span
-                        x-text="open ? '−' : '+'"></span>
-                </button>
-                <div x-show="open" x-cloak class="ml-7 space-y-1 border-l border-slate-800 pl-3">
-                    <button type="button" @click="activeTab = 'schools'"
-                        :class="activeTab === 'schools' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
-                        class="block py-1.5 text-left">Schools</button>
-                    <button type="button" @click="activeTab = 'sessions'"
-                        :class="activeTab === 'sessions' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
-                        class="block py-1.5 text-left">Sessions</button>
-                    <button type="button" @click="activeTab = 'shrenies'"
-                        :class="activeTab === 'shrenies' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
-                        class="block py-1.5 text-left">Shrenies</button>
-                    <button type="button" @click="activeTab = 'sections'"
-                        :class="activeTab === 'sections' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
-                        class="block py-1.5 text-left">Sections</button>
-                    <a href="{{ route('admin.shreny-sections') }}"
-                        class="block py-1.5 text-left hover:text-white">Shreny assignments</a>
-                    <a href="{{ route('admin.shreny-subjects') }}"
-                        class="block py-1.5 text-left hover:text-white">Shreny subjects</a>
-                    <button type="button" @click="activeTab = 'subjects'"
-                        :class="activeTab === 'subjects' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
-                        class="block py-1.5 text-left">Subjects</button>
-                    <button type="button" @click="activeTab = 'teachers'"
-                        :class="activeTab === 'teachers' ? 'text-cyan-300 font-semibold' : 'hover:text-white'"
-                        class="block py-1.5 text-left">Teachers</button>
-                </div>
-
-                <button type="button"
-                    class="flex w-full items-center justify-between rounded px-3 py-2 text-left hover:bg-slate-900"
-                    @click="examOpen = !examOpen">
-                    <span class="flex items-center gap-2"><span>▣</span><span>Exam Settings</span></span>
-                    <span x-text="examOpen ? '−' : '+'"></span>
-                </button>
-                <div x-show="examOpen" x-cloak class="ml-7 space-y-1 border-l border-slate-800 pl-3">
-                    <p class="py-1.5 font-semibold text-slate-500">Exam Basics</p>
-                    <a href="{{ route('admin.exam-names') }}" class="block py-1.5 text-left hover:text-white">Exam Name</a>
-                    <a href="{{ route('admin.exam-types') }}" class="block py-1.5 text-left hover:text-white">Exam Type</a>
-                    <a href="{{ route('admin.exam-parts') }}" class="block py-1.5 text-left hover:text-white">Exam Parts</a>
-                    <a href="{{ route('admin.exam-modes') }}" class="block py-1.5 text-left hover:text-white">Exam Mode</a>
-                    <a href="{{ route('admin.exam-grades') }}" class="block py-1.5 text-left hover:text-white">Exam Grade</a>
-                    <a href="{{ route('admin.exam-details') }}" class="block py-1.5 text-left hover:text-white">Exam Details</a>
-                </div>
-
-                <button type="button" @click="activeTab = 'students'"
-                    :class="activeTab === 'students' ? 'bg-slate-800 text-cyan-300 font-semibold' : 'hover:bg-slate-900'"
-                    class="flex w-full items-center gap-2 rounded px-3 py-2 text-left">
-                    ◉ <span>Students</span>
-                </button>
-                <button type="button" @click="activeTab = 'teachers'"
-                    :class="activeTab === 'teachers' ? 'bg-slate-800 text-cyan-300 font-semibold' : 'hover:bg-slate-900'"
-                    class="flex w-full items-center gap-2 rounded px-3 py-2 text-left">
-                    ◇ <span>Teachers</span>
-                </button>
-
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Administration
+                <button wire:click="selectPanel('overview')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">⌂
+                    <span>Overview</span></button>
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Students</p>
+                <button wire:click="selectPanel('student-crs')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'student-crs' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Shreny
+                    & Section wise</button>
+                <button wire:click="selectPanel('students')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'students' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">New
+                    admissions (StudentDB)</button>
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">General basic
+                    settings</p>
+                @foreach ([['school','Schools'],['session','Sessions'],['shreny','Shrenies'],['section','Sections'],['subject','Subjects'],['teacher','Teachers']] as [$panel, $label])
+                <button wire:click="selectPanel('{{ $panel }}')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{
+                    $label }}</button>
+                @endforeach
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Combinations
                 </p>
-                <a href="{{ route('admin.users') }}"
-                    class="flex items-center gap-2 rounded px-3 py-2 hover:bg-slate-900">♙ <span>Users &
-                        roles</span></a>
-                <button type="button" @click="activeTab = 'settings'"
-                    :class="activeTab === 'settings' ? 'bg-slate-800 text-cyan-300 font-semibold' : 'hover:bg-slate-900'"
-                    class="flex w-full items-center gap-2 rounded px-3 py-2 text-left">
-                    ⚙ <span>Settings</span>
-                </button>
+                <button wire:click="selectPanel('shreny-sections')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'shreny-sections' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Shreny-Sections</button>
+                <button wire:click="selectPanel('shreny-subjects')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'shreny-subjects' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Shreny-Subjects</button>
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Exam settings
+                </p>
+                <button wire:click="selectPanel('exam-overview')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam
+                    overview</button>
+                <button wire:click="selectPanel('exam-basics')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-basics' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Basic
+                    settings</button>
+                <button wire:click="selectPanel('exam-combinations')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-combinations' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Combination
+                    settings</button>
+                <button wire:click="selectPanel('exam-script-distribution')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-script-distribution' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Script
+                    distribution</button>
+                <button wire:click="selectPanel('exam-marks-entry')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-marks-entry' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Marks
+                    entry</button>
             </nav>
         </aside>
-
         <section class="min-w-0 flex-1">
             <header class="flex min-h-14 items-center justify-between border-b border-slate-200 px-5">
                 <div>
                     <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-600">Administration</p>
-                    <h1 class="text-lg font-semibold tracking-tight capitalize" x-text="activeTab"></h1>
-                </div>
-                <div class="flex items-center gap-3 text-xs">
-                    <span class="text-slate-500">{{ auth()->user()->name }}</span>
-                    <span class="rounded-full bg-cyan-50 px-2 py-1 font-semibold text-cyan-700">ADMIN</span>
-                </div>
+                    <h1 class="text-lg font-semibold tracking-tight">{{ $panelTitles[$activePanel] ?? 'Admin panel' }}
+                    </h1>
+                </div><span class="rounded-full bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-700">ADMIN</span>
             </header>
-
             <main class="space-y-5 p-5">
-                <!-- Summary Cards (Visible in Overview mode) -->
-                <div x-show="activeTab === 'overview'" x-cloak class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    @php
-                    $summaryCards = [
-                    ['label' => 'Schools', 'value' => $totalSchools, 'color' => 'text-cyan-600'],
-                    ['label' => 'Users', 'value' => $totalUsers, 'color' => 'text-violet-600'],
-                    ['label' => 'Teachers', 'value' => $totalTeachers, 'color' => 'text-amber-600'],
-                    ['label' => 'Students', 'value' => $totalStudents, 'color' => 'text-emerald-600'],
-                    ];
-                    @endphp
-                    @foreach ($summaryCards as $card)
+                @if($activePanel === 'overview' || $activePanel === 'exam-overview')
+                <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    @foreach ([['Schools',$totalSchools,'text-cyan-600'],['Users',$totalUsers,'text-violet-600'],['Teachers',$totalTeachers,'text-amber-600'],['Students',$totalStudents,'text-emerald-600']] as [$label,$value,$color])
                     <div class="rounded-lg border border-slate-200 bg-white p-4">
-                        <p class="text-[11px] font-medium text-slate-500">{{ $card['label'] }}</p>
-                        <p class="mt-1 text-2xl font-semibold tracking-tight {{ $card['color'] }}">{{ $card['value'] }}
-                        </p>
+                        <p class="text-[11px] text-slate-500">{{ $label }}</p>
+                        <p class="mt-1 text-2xl font-semibold {{ $color }}">{{ $value }}</p>
                     </div>
                     @endforeach
                 </div>
-
-                <!-- Livewire Components (Visible in Overview OR when explicitly selected) -->
-                <div x-show="activeTab === 'overview' || activeTab === 'schools'" x-cloak
-                    class="rounded-lg border border-slate-200 bg-white p-4">
-                    <livewire:school-comp />
+                @endif
+                @if($activePanel === 'overview')
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">General settings</p>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-600"><span>Schools and
+                                sessions</span><span>Shrenies and sections</span><span>Subjects and
+                                teachers</span><span>Combinations</span></div>
+                    </div>
+                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Exam settings</p>
+                        <p class="text-xs text-slate-600">Basic definitions, exam structure, marks, modes, grades, and
+                            Shreny-subject combinations.</p>
+                    </div>
                 </div>
-                <div x-show="activeTab === 'overview' || activeTab === 'sessions'" x-cloak
-                    class="rounded-lg border border-slate-200 bg-white p-4">
-                    <livewire:session-comp />
+                @elseif($activePanel === 'students')
+                <livewire:student-db-comp />
+                @elseif($activePanel === 'student-crs')
+                <livewire:student-cr-comp />
+                @elseif($activePanel === 'school')
+                <livewire:school-comp />
+                @elseif($activePanel === 'session')
+                <livewire:session-comp />
+                @elseif($activePanel === 'shreny')
+                <livewire:shreny-comp />
+                @elseif($activePanel === 'section')
+                <livewire:section-comp />
+                @elseif($activePanel === 'subject')
+                <livewire:subject-comp />
+                @elseif($activePanel === 'teacher')
+                <livewire:teacher-comp />
+                @elseif($activePanel === 'shreny-sections')
+                <livewire:shreny-section-comp />
+                @elseif($activePanel === 'shreny-subjects')
+                <livewire:shreny-subject-comp />
+                @elseif($activePanel === 'exam-basics') <div
+                    class="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
+                    <livewire:exam-name-comp />
+                    <livewire:exam-type-comp />
+                    <livewire:exam-part-comp />
+                    <livewire:exam-mode-comp />
+                    <livewire:exam-grade-comp />
                 </div>
-                <div x-show="activeTab === 'overview' || activeTab === 'shrenies'" x-cloak
-                    class="rounded-lg border border-slate-200 bg-white p-4">
-                    <livewire:shreny-comp />
-                </div>
-                <div x-show="activeTab === 'overview' || activeTab === 'sections'" x-cloak
-                    class="rounded-lg border border-slate-200 bg-white p-4">
-                    <livewire:section-comp />
-                </div>
-                <div x-show="activeTab === 'overview' || activeTab === 'subjects'" x-cloak
-                    class="rounded-lg border border-slate-200 bg-white p-4">
-                    <livewire:subject-comp />
-                </div>
-                <div x-show="activeTab === 'overview' || activeTab === 'teachers'" x-cloak
-                    class="rounded-lg border border-slate-200 bg-white p-4">
-                    <livewire:teacher-comp />
-                </div>
+                @elseif($activePanel === 'exam-combinations' || $activePanel === 'exam-overview')
+                <livewire:exam-settings />
+                <livewire:exam-marks-settings />
+                @elseif($activePanel === 'exam-script-distribution')
+                <livewire:exam-script-distribution-comp />
+                @elseif($activePanel === 'exam-marks-entry')
+                <livewire:exam-marks-entry-comp />
+                @endif
             </main>
         </section>
     </div>
-    <style>
-        [x-cloak] {
-            display: none !important
-        }
-    </style>
 </div>

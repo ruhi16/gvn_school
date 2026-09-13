@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-<livewire:exam-marks-settings />
+<livewire:admin-dashboard-comp active-panel="exam-combinations" />
 @endsection
