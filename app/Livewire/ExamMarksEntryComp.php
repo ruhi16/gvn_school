@@ -136,7 +136,7 @@ class ExamMarksEntryComp extends Component
             ->where('curr_section_id', $this->selectedSectionId)
             ->where('is_active', true)
             ->get()
-            ->sortBy(fn ($student) => [$student->curr_roll_no ?? PHP_INT_MAX, $student->student?->name ?? ''])
+            ->sortBy(fn($student) => [$student->curr_roll_no ?? PHP_INT_MAX, $student->student?->name ?? ''])
             ->values();
     }
 
@@ -174,7 +174,7 @@ class ExamMarksEntryComp extends Component
         $session = $this->activeSession();
         $this->currentSessionId = $session?->id;
         $shrenySections = ShrenySection::query()->where('is_active', true)
-            ->when($session, fn ($query) => $query->where(function ($query) use ($session) {
+            ->when($session, fn($query) => $query->where(function ($query) use ($session) {
                 $query->where('session_id', $session->id)->orWhereNull('session_id');
             }))->orderBy('shreny_id')->orderBy('order_id')->get();
         $shrenies = Shreny::query()->where('is_active', true)->get()->keyBy('id');
@@ -184,39 +184,41 @@ class ExamMarksEntryComp extends Component
         $examTypes = ExamType::query()->where('is_active', true)->get()->keyBy('id');
         $examParts = ExamPart::query()->where('is_active', true)->get()->keyBy('id');
         $configurations = ExamShrenyPartFmPm::query()->whereNull('shreny_id')->whereNull('subject_id')->whereNotNull('exam_part_id')->orderBy('exam_name_id')->orderBy('exam_type_id')->orderBy('exam_part_id')->get();
-        $examSubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get(['shreny_id', 'subject_id'])->unique(fn ($row) => $row->shreny_id . ':' . $row->subject_id)->groupBy('shreny_id');
+        $examSubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get(['shreny_id', 'subject_id'])->unique(fn($row) => $row->shreny_id . ':' . $row->subject_id)->groupBy('shreny_id');
         $examAssignments = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get()
-            ->keyBy(fn ($row) => $row->shreny_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
-        $entries = ExamMarksEntry::query()->when($session, fn ($query) => $query->where('session_id', $session->id))->get()->keyBy(fn ($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id . ':' . $row->student_cr_id);
+            ->keyBy(fn($row) => $row->shreny_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
+        $entries = ExamMarksEntry::query()->when($session, fn($query) => $query->where('session_id', $session->id))->get()->keyBy(fn($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id . ':' . $row->student_cr_id);
         $selectedStudents = $this->showEntry ? $this->students() : collect();
         $selectedSubject = $subjects[$this->selectedSubjectId] ?? null;
         $selectedShreny = $shrenies[$this->selectedShrenyId] ?? null;
         $selectedSection = $sections[$this->selectedSectionId] ?? null;
-        $selectedConfiguration = $configurations->first(fn ($configuration) => $configuration->exam_name_id === $this->selectedExamNameId && $configuration->exam_type_id === $this->selectedExamTypeId && $configuration->exam_part_id === $this->selectedExamPartId);
+        $selectedConfiguration = $configurations->first(fn($configuration) => $configuration->exam_name_id === $this->selectedExamNameId && $configuration->exam_type_id === $this->selectedExamTypeId && $configuration->exam_part_id === $this->selectedExamPartId);
         $scopeEntries = $this->showEntry ? ExamMarksEntry::query()->where($this->scopeKey())->get() : collect();
-        $isFinalized = $scopeEntries->isNotEmpty() && $scopeEntries->every(fn ($entry) => $entry->is_finalized);
-        $isIssued = $scopeEntries->contains(fn ($entry) => $entry->is_issued);
+        $isFinalized = $scopeEntries->isNotEmpty() && $scopeEntries->every(fn($entry) => $entry->is_finalized);
+        $isIssued = $scopeEntries->contains(fn($entry) => $entry->is_issued);
         $selectedCombinations = $this->showEntry
-            ? $configurations->filter(fn ($configuration) => isset($examAssignments[$this->selectedShrenyId . ':' . $this->selectedSubjectId . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id]))
+            ? $configurations->filter(fn($configuration) => isset($examAssignments[$this->selectedShrenyId . ':' . $this->selectedSubjectId . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id]))
             : collect();
         $selectedCombinationEntries = $this->showEntry
             ? ExamMarksEntry::query()->where('shreny_id', $this->selectedShrenyId)->where('section_id', $this->selectedSectionId)->where('subject_id', $this->selectedSubjectId)->where('session_id', $this->currentSessionId)->get()
-                ->keyBy(fn ($entry) => $entry->exam_name_id . ':' . $entry->exam_type_id . ':' . $entry->exam_part_id . ':' . $entry->student_cr_id)
+                ->keyBy(fn($entry) => $entry->exam_name_id . ':' . $entry->exam_type_id . ':' . $entry->exam_part_id . ':' . $entry->student_cr_id)
             : collect();
         $selectedCombinationTeachers = $this->showEntry
             ? ExamScriptDistribution::query()->where('shreny_id', $this->selectedShrenyId)->where('section_id', $this->selectedSectionId)->where('subject_id', $this->selectedSubjectId)->where('session_id', $this->currentSessionId)->get()
-                ->keyBy(fn ($distribution) => $distribution->exam_name_id . ':' . $distribution->exam_type_id . ':' . $distribution->exam_part_id)
+                ->keyBy(fn($distribution) => $distribution->exam_name_id . ':' . $distribution->exam_type_id . ':' . $distribution->exam_part_id)
             : collect();
         $teachers = Teacher::query()->where('is_active', true)->get()->keyBy('id');
         $selectedCombinationStates = $this->showEntry
             ? $selectedCombinations->mapWithKeys(function ($configuration) use ($selectedCombinationEntries) {
                 $prefix = $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id . ':';
-                $entries = $selectedCombinationEntries->filter(fn ($entry, $key) => str_starts_with($key, $prefix));
+                $entries = $selectedCombinationEntries->filter(fn($entry, $key) => str_starts_with($key, $prefix));
 
-                return [$prefix => [
-                    'is_finalized' => $entries->isNotEmpty() && $entries->every(fn ($entry) => $entry->is_finalized),
-                    'is_issued' => $entries->contains(fn ($entry) => $entry->is_issued),
-                ]];
+                return [
+                    $prefix => [
+                        'is_finalized' => $entries->isNotEmpty() && $entries->every(fn($entry) => $entry->is_finalized),
+                        'is_issued' => $entries->contains(fn($entry) => $entry->is_issued),
+                    ]
+                ];
             })
             : collect();
 

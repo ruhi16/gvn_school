@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ExamGrade;
 use App\Models\ExamMode;
 use App\Models\ExamName;
 use App\Models\ExamPart;
@@ -458,6 +459,83 @@ class UserSeeder extends Seeder
             'remarks' => 'This is a sample shreny-section association.',
             'updated_at' => now(),
             'created_at' => now(),
+        ]);
+        ExamGrade::create([
+            'name' => 'A+',
+            'description' => 'Excellent',
+            'from_percentage' => 90,
+            'to_percentage' => 100,
+            'order_id' => 1,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
+        ]);
+        ExamGrade::create([
+            'name' => 'A',
+            'description' => 'Very Good',
+            'from_percentage' => 80,
+            'to_percentage' => 89,
+            'order_id' => 2,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
+        ]);
+        ExamGrade::create([
+            'name' => 'B+',
+            'description' => 'Good',
+            'from_percentage' => 70,
+            'to_percentage' => 79,
+            'order_id' => 3,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
+        ]);
+        ExamGrade::create([
+            'name' => 'B',
+            'description' => 'Above Average',
+            'from_percentage' => 60,
+            'to_percentage' => 69,
+            'order_id' => 4,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
+        ]);
+        ExamGrade::create([
+            'name' => 'C+',
+            'description' => 'Average',
+            'from_percentage' => 45,
+            'to_percentage' => 59,
+            'order_id' => 5,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
+        ]);
+        ExamGrade::create([
+            'name' => 'C',
+            'description' => 'Below Average',
+            'from_percentage' => 25,
+            'to_percentage' => 44,
+            'order_id' => 6,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
+        ]);
+        ExamGrade::create([
+            'name' => 'D',
+            'description' => 'Poor',
+            'from_percentage' => 0,
+            'to_percentage' => 24,
+            'order_id' => 7,
+            'school_id' => 1,
+            'session_id' => 1,
+            'is_active' => true,
+            'remarks' => 'This is a sample exam grade.',
         ]);
 
     }

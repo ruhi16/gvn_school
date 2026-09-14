@@ -5,7 +5,7 @@ $panelTitles = [
 'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
 'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
 'exam-combinations' => 'Exam combination settings', 'exam-script-distribution' => 'Exam script distribution',
-'exam-marks-entry' => 'Exam marks entry',
+'exam-marks-entry' => 'Exam marks entry', 'exam-marks-register' => 'Exam marks register', 'exam-marks-sheets' => 'Exam marks sheets',
 ];
 @endphp
 <div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900">
@@ -60,6 +60,12 @@ $panelTitles = [
                 <button wire:click="selectPanel('exam-marks-entry')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-marks-entry' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Marks
                     entry</button>
+                <button wire:click="selectPanel('exam-marks-register')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-marks-register' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Marks
+                    register</button>
+                <button wire:click="selectPanel('exam-marks-sheets')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-marks-sheets' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Marks
+                    sheets</button>
             </nav>
         </aside>
         <section class="min-w-0 flex-1">
@@ -130,6 +136,10 @@ $panelTitles = [
                 <livewire:exam-script-distribution-comp />
                 @elseif($activePanel === 'exam-marks-entry')
                 <livewire:exam-marks-entry-comp />
+                @elseif($activePanel === 'exam-marks-register')
+                <livewire:exam-marks-register-comp />
+                @elseif($activePanel === 'exam-marks-sheets')
+                <livewire:exam-marks-sheet-list-comp />
                 @endif
             </main>
         </section>

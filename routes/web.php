@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Models\StudentDb;
+use App\Models\StudentCr;
+use App\Support\ExamMarksRegisterData;
+use App\Support\ExamMarksSheetData;
 use Illuminate\Support\Facades\Route;
 use Spatie\LaravelPdf\Facades\Pdf;
 
@@ -34,6 +37,32 @@ Route::middleware('auth')->group(function () {
         Route::view('/admin/exam-settings/exam-grades', 'admin.exam-grades')->name('admin.exam-grades');
         Route::view('/admin/exam-settings/details', 'admin.exam-details')->name('admin.exam-details');
         Route::view('/admin/exam-settings/marks', 'admin.exam-marks')->name('admin.exam-marks');
+        Route::view('/admin/exam-settings/marks/sheets', 'admin.exam-marks-sheets')->name('admin.exam-marks.sheets');
+        Route::get('/admin/exam-settings/marks/register/pdf', function (ExamMarksRegisterData $registerData) {
+            return Pdf::view('pdfs.exam-marks-register', $registerData->build() + compact('registerData'))
+                ->format('a3')
+                ->withBrowsershot(function ($browsershot) {
+                    $browsershot
+                        ->setChromePath('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
+                        ->setNodeModulePath(base_path('node_modules'))
+                        ->noSandbox();
+                })
+                ->download('exam-marks-register.pdf');
+        })->name('admin.exam-marks.register.pdf');
+        Route::get('/admin/exam-settings/marks/sheet/{studentCr}', function (StudentCr $studentCr, ExamMarksSheetData $sheetData) {
+            return view('admin.exam-marks-sheet', $sheetData->build($studentCr) + ['registerData' => $sheetData, 'studentCr' => $studentCr]);
+        })->name('admin.exam-marks.sheet');
+        Route::get('/admin/exam-settings/marks/sheet/{studentCr}/pdf', function (StudentCr $studentCr, ExamMarksSheetData $sheetData) {
+            return Pdf::view('pdfs.exam-marks-sheet', $sheetData->build($studentCr) + ['registerData' => $sheetData])
+                ->format('a4')->landscape()
+                ->withBrowsershot(function ($browsershot) {
+                    $browsershot
+                        ->setChromePath('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe')
+                        ->setNodeModulePath(base_path('node_modules'))
+                        ->noSandbox();
+                })
+                ->download("marks-sheet-{$studentCr->id}.pdf");
+        })->name('admin.exam-marks.sheet.pdf');
         Route::view('/admin/students', 'admin.students')->name('admin.students');
         Route::get('/admin/students/new', fn() => view('admin.student-form'))->name('admin.students.create');
         Route::get('/admin/students/{studentDb}/edit', fn(StudentDb $studentDb) => view('admin.student-form', compact('studentDb')))->name('admin.students.edit');

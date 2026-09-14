@@ -47,12 +47,12 @@ class ExamMarksSettings extends Component
         $subjects = Subject::query()->where('is_active', true)->orderBy('order_id')->orderBy('name')->get()->keyBy('id');
         $shrenySubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')
             ->get(['shreny_id', 'subject_id']);
-        $shrenySubjects = $shrenySubjects->unique(fn ($row) => $row->shreny_id . ':' . $row->subject_id)->groupBy('shreny_id');
+        $shrenySubjects = $shrenySubjects->unique(fn($row) => $row->shreny_id . ':' . $row->subject_id)->groupBy('shreny_id');
         $configurations = ExamShrenyPartFmPm::query()
             ->whereNull('shreny_id')->whereNull('subject_id')->whereNotNull('exam_part_id')
             ->orderBy('exam_name_id')->orderBy('exam_type_id')->orderBy('exam_part_id')->get();
         $marks = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get()
-            ->keyBy(fn ($row) => $row->shreny_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
+            ->keyBy(fn($row) => $row->shreny_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
 
         return view('livewire.exam-marks-settings', compact('examNames', 'examTypes', 'examParts', 'shrenies', 'subjects', 'shrenySubjects', 'configurations', 'marks'));
     }

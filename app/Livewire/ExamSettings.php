@@ -116,7 +116,7 @@ class ExamSettings extends Component
             ->get();
 
         $allSelected = $configurations->isNotEmpty()
-            && $configurations->every(fn ($configuration) => ExamShrenyPartFmPm::query()
+            && $configurations->every(fn($configuration) => ExamShrenyPartFmPm::query()
                 ->where('shreny_id', $shrenyId)
                 ->where('subject_id', $subjectId)
                 ->where('exam_name_id', $configuration->exam_name_id)
@@ -149,10 +149,12 @@ class ExamSettings extends Component
 
     private function ensureExamType(int $examNameId, int $examTypeId): void
     {
-        if (!ExamShrenyPartFmPm::query()
-            ->whereNull('shreny_id')->whereNull('subject_id')
-            ->where('exam_name_id', $examNameId)->where('exam_type_id', $examTypeId)
-            ->whereNull('exam_part_id')->exists()) {
+        if (
+            !ExamShrenyPartFmPm::query()
+                ->whereNull('shreny_id')->whereNull('subject_id')
+                ->where('exam_name_id', $examNameId)->where('exam_type_id', $examTypeId)
+                ->whereNull('exam_part_id')->exists()
+        ) {
             ExamShrenyPartFmPm::create([
                 'name' => 'Exam type configuration',
                 'exam_name_id' => $examNameId,
@@ -199,18 +201,18 @@ class ExamSettings extends Component
             ->whereNull('shreny_id')->whereNull('subject_id')->whereNotNull('exam_part_id')
             ->orderBy('exam_name_id')->orderBy('exam_type_id')->orderBy('exam_part_id')->get();
         $typeIds = ExamShrenyPartFmPm::query()->whereNull('shreny_id')->whereNull('subject_id')
-            ->whereNull('exam_part_id')->get()->groupBy('exam_name_id')->map(fn ($rows) => $rows->pluck('exam_type_id')->map(fn ($id) => (int) $id)->all())->all();
-        $selectedParts = $configurations->groupBy(fn ($row) => $row->exam_name_id . ':' . $row->exam_type_id)
-            ->map(fn ($rows) => $rows->keyBy('exam_part_id'))->all();
+            ->whereNull('exam_part_id')->get()->groupBy('exam_name_id')->map(fn($rows) => $rows->pluck('exam_type_id')->map(fn($id) => (int) $id)->all())->all();
+        $selectedParts = $configurations->groupBy(fn($row) => $row->exam_name_id . ':' . $row->exam_type_id)
+            ->map(fn($rows) => $rows->keyBy('exam_part_id'))->all();
         $assignedSubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get()
-            ->groupBy(fn ($row) => $row->shreny_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id)->all();
+            ->groupBy(fn($row) => $row->shreny_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id)->all();
         $shrenySubjects = ShrenySubject::query()
             ->where('is_active', true)
             ->whereIn('shreny_id', $shrenies->pluck('id'))
             ->whereIn('subject_id', $subjects->pluck('id'))
             ->get()
             ->groupBy('shreny_id')
-            ->map(fn ($mappings) => $mappings->sortBy(function ($mapping) use ($subjects) {
+            ->map(fn($mappings) => $mappings->sortBy(function ($mapping) use ($subjects) {
                 $subject = $subjects->firstWhere('id', $mapping->subject_id);
 
                 return [

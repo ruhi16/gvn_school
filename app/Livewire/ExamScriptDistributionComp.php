@@ -94,8 +94,12 @@ class ExamScriptDistributionComp extends Component
     {
         $this->showModal = false;
         $this->reset([
-            'selectedShrenyId', 'selectedSectionId', 'selectedSubjectId',
-            'selectedExamNameId', 'selectedExamTypeId', 'selectedExamPartId',
+            'selectedShrenyId',
+            'selectedSectionId',
+            'selectedSubjectId',
+            'selectedExamNameId',
+            'selectedExamTypeId',
+            'selectedExamPartId',
             'selectedTeacherId',
         ]);
         $this->resetValidation();
@@ -130,7 +134,7 @@ class ExamScriptDistributionComp extends Component
 
         $shrenySections = ShrenySection::query()
             ->where('is_active', true)
-            ->when($session, fn ($query) => $query->where(function ($query) use ($session) {
+            ->when($session, fn($query) => $query->where(function ($query) use ($session) {
                 $query->where('session_id', $session->id)->orWhereNull('session_id');
             }))
             ->orderBy('shreny_id')->orderBy('order_id')->get();
@@ -143,12 +147,12 @@ class ExamScriptDistributionComp extends Component
         $teachers = Teacher::query()->where('is_active', true)->orderBy('name')->get()->keyBy('id');
         $teacherSubjectIds = TeacherSubjects::query()
             ->where('is_active', true)
-            ->when($session, fn ($query) => $query->where(function ($query) use ($session) {
+            ->when($session, fn($query) => $query->where(function ($query) use ($session) {
                 $query->where('session_id', $session->id)->orWhereNull('session_id');
             }))
             ->get(['teacher_id', 'subject_id'])
             ->groupBy('subject_id')
-            ->map(fn ($rows) => $rows->pluck('teacher_id')->unique()->values())
+            ->map(fn($rows) => $rows->pluck('teacher_id')->unique()->values())
             ->all();
         $configurations = ExamShrenyPartFmPm::query()
             ->whereNull('shreny_id')->whereNull('subject_id')->whereNotNull('exam_part_id')
@@ -156,17 +160,27 @@ class ExamScriptDistributionComp extends Component
         $examSubjects = ExamShrenyPartFmPm::query()
             ->whereNotNull('shreny_id')->whereNotNull('subject_id')
             ->get(['shreny_id', 'subject_id'])
-            ->unique(fn ($row) => $row->shreny_id . ':' . $row->subject_id)
+            ->unique(fn($row) => $row->shreny_id . ':' . $row->subject_id)
             ->groupBy('shreny_id');
         $distributions = ExamScriptDistribution::query()
-            ->when($session, fn ($query) => $query->where('session_id', $session->id))
+            ->when($session, fn($query) => $query->where('session_id', $session->id))
             ->get()
-            ->keyBy(fn ($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
+            ->keyBy(fn($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
 
         return view('livewire.exam-script-distribution-comp', compact(
-            'session', 'shrenySections', 'shrenies', 'sections', 'subjects', 'examNames',
-            'examTypes', 'examParts', 'teachers', 'teacherSubjectIds', 'configurations',
-            'examSubjects', 'distributions',
+            'session',
+            'shrenySections',
+            'shrenies',
+            'sections',
+            'subjects',
+            'examNames',
+            'examTypes',
+            'examParts',
+            'teachers',
+            'teacherSubjectIds',
+            'configurations',
+            'examSubjects',
+            'distributions',
         ));
     }
 }
