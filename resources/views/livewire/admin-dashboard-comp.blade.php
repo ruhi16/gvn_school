@@ -4,7 +4,7 @@ $panelTitles = [
 'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies', 'section' => 'Sections',
 'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
 'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
-'exam-combinations' => 'Exam combination settings', 'exam-script-distribution' => 'Exam script distribution',
+'exam-combinations' => 'Exam Class Subjects', 'exam-fm-pm-assignment' => 'Exam FM PM Assignment', 'exam-script-distribution' => 'Exam script distribution',
 'exam-marks-entry' => 'Exam marks entry', 'exam-marks-register' => 'Exam marks register', 'exam-marks-sheets' => 'Exam marks sheets',
 ];
 @endphp
@@ -52,8 +52,11 @@ $panelTitles = [
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-basics' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Basic
                     settings</button>
                 <button wire:click="selectPanel('exam-combinations')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-combinations' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Combination
-                    settings</button>
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-combinations' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam
+                    Class Subjects</button>
+                <button wire:click="selectPanel('exam-fm-pm-assignment')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-fm-pm-assignment' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam
+                    FM PM Assignment</button>
                 <button wire:click="selectPanel('exam-script-distribution')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-script-distribution' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Script
                     distribution</button>
@@ -131,6 +134,7 @@ $panelTitles = [
                 </div>
                 @elseif($activePanel === 'exam-combinations' || $activePanel === 'exam-overview')
                 <livewire:exam-settings />
+                @elseif($activePanel === 'exam-fm-pm-assignment')
                 <livewire:exam-marks-settings />
                 @elseif($activePanel === 'exam-script-distribution')
                 <livewire:exam-script-distribution-comp />
