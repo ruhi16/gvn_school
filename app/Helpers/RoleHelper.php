@@ -25,6 +25,7 @@ class RoleHelper
             case UserRole::ADMIN:
                 $navItems[] = ['label' => 'Admin Panel', 'route' => 'admin.dashboard'];
                 $navItems[] = ['label' => 'Manage Users', 'route' => 'admin.users'];
+                $navItems[] = ['label' => 'User Profile', 'route' => 'admin.users'];
                 break;
             case UserRole::TEACHER:
                 $navItems[] = ['label' => 'Teacher Panel', 'route' => 'teacher.dashboard'];

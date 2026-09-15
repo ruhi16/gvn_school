@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'staff', 'teacher', 'student', 'visitor'])->default('visitor');
+            
+            $table->enum('role', ['admin', 'staff', 'teacher', 'student', 'visitor', 'officials'])->default('visitor');            
+            $table->integer('teacher_id')->nullable();
+            $table->integer('student_id')->nullable();
+
             $table->string('dp_url')->nullable();
             $table->integer('school_id')->nullable();
             $table->boolean('is_active')->default(true);

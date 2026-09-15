@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     // Admin only routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
-        Route::get('/admin/users', [DashboardController::class, 'manageUsers'])->name('admin.users');
+        Route::view('/admin/users', 'admin.users')->name('admin.users');
         Route::view('/admin/shreny-sections', 'admin.shreny-sections')->name('admin.shreny-sections');
         Route::view('/admin/shreny-subjects', 'admin.shreny-subjects')->name('admin.shreny-subjects');
         Route::view('/admin/exam-settings', 'admin.exam-settings')->name('admin.exam-settings');

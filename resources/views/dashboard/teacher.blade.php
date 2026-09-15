@@ -4,9 +4,21 @@
 <div class="row">
     <div class="col-md-12">
         <h1>Teacher Dashboard</h1>
-        <div class="alert alert-success">
-            👨‍🏫 This page is only accessible to Teachers
+        @if (!$teacher)
+        <div class="alert alert-warning">Waiting for approval. An administrator must assign your teacher profile before
+            teacher information is available.</div>
+        @else
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>{{ $teacher->name }}</h3>
+                <p class="mb-0">{{ $teacher->email ?: 'Email not available' }} | {{ $teacher->mobile ?: 'Mobile not
+                    available' }}</p>
+                <p class="mb-0">Qualification: {{ $teacher->high_qual ?: 'Not available' }} | Address: {{
+                    collect([$teacher->vill, $teacher->district, $teacher->state])->filter()->join(', ') ?: 'Not
+                    available' }}</p>
+            </div>
         </div>
+        @endif
     </div>
 </div>
 
@@ -19,7 +31,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card text-white bg-warning">
             <div class="card-body">
@@ -28,7 +40,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card text-white bg-secondary">
             <div class="card-body">
@@ -50,7 +62,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">Teacher Features</div>

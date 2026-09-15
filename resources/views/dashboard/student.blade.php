@@ -4,9 +4,22 @@
 <div class="row">
     <div class="col-md-12">
         <h1>Student Dashboard</h1>
-        <div class="alert alert-warning">
-            🎓 This page is only accessible to Students
+        @if (!$student)
+        <div class="alert alert-warning">Verify your student profile with your date of birth to view your student
+            information.</div>
+        <livewire:current-profile-comp />
+        @else
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>{{ $student->name }}</h3>
+                <p class="mb-0">Father: {{ $student->fname ?: 'Not available' }} | Date of birth: {{
+                    $student->dob?->format('d M Y') ?: 'Not available' }}</p>
+                <p class="mb-0">Gender: {{ $student->gender ?: 'Not available' }} | Mobile: {{ $student->mobile_1 ?:
+                    'Not available' }} | Address: {{ collect([$student->village, $student->district,
+                    $student->state])->filter()->join(', ') ?: 'Not available' }}</p>
+            </div>
         </div>
+        @endif
     </div>
 </div>
 
@@ -19,7 +32,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card text-white bg-primary">
             <div class="card-body">
@@ -28,7 +41,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card text-white bg-info">
             <div class="card-body">
@@ -50,7 +63,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">Student Features</div>

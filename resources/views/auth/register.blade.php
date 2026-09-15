@@ -23,9 +23,10 @@
                 
                 <option value="student">Visitor</option>
                 <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
+                <option value="teacher">Officials</option>
+                {{-- <option value="teacher">Teacher</option>
                 <option value="student">Staff</option>
-                <option value="admin">Admin</option>
+                <option value="admin">Admin</option> --}}
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>

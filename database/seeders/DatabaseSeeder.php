@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             StudentdbSeeder::class,
             TeacherSeeder::class,
+            ShrenySubjectSeeder::class,
             // StudentDbSeeder::class,
             // StudentCrSeeder::class,
         ]);
