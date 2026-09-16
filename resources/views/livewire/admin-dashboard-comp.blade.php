@@ -4,7 +4,10 @@ $panelTitles = [
 'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies', 'section' => 'Sections',
 'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
 'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
-'exam-combinations' => 'Exam combination settings', 'user-profile' => 'User Profile',
+'exam-names' => 'Exam names', 'exam-types' => 'Exam types', 'exam-parts' => 'Exam parts', 'exam-modes' => 'Exam modes',
+'exam-grades' => 'Exam grades', 'exam-combinations' => 'Exam combination settings', 'exam-marks-settings' => 'Marks settings',
+'exam-marks-entry' => 'Marks entry', 'exam-marks-register' => 'Marks register', 'exam-marks-sheets' => 'Marks sheets',
+'exam-script-distribution' => 'Script distribution', 'user-profile' => 'User Profile',
 ];
 @endphp
 <div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900">
@@ -21,44 +24,29 @@ $panelTitles = [
             <nav class="space-y-1 p-3 text-xs">
                 <button wire:click="selectPanel('overview')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">⌂
-                    <span>Overview</span></button>
+                    <span>General overview</span></button>                
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Students</p>
-                <button wire:click="selectPanel('student-crs')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'student-crs' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Shreny
-                    & Section wise</button>
-                <button wire:click="selectPanel('students')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'students' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">New
-                    admissions (StudentDB)</button>
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">General basic
-                    settings</p>
-                @foreach
-                ([['school','Schools'],['session','Sessions'],['shreny','Shrenies'],['section','Sections'],['subject','Subjects'],['teacher','Teachers']]
-                as [$panel, $label])
+                @foreach ([['students','StudentDB (New Adm)'],['student-crs','StudentCR']] as [$panel, $label])
                 <button wire:click="selectPanel('{{ $panel }}')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{
-                    $label }}</button>
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
                 @endforeach
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Settings</p>
-                <button wire:click="selectPanel('user-profile')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'user-profile' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">User
-                    Profile</button>
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Combinations
-                </p>
-                <button wire:click="selectPanel('shreny-sections')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'shreny-sections' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Shreny-Sections</button>
-                <button wire:click="selectPanel('shreny-subjects')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'shreny-subjects' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Shreny-Subjects</button>
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Exam settings
-                </p>
+                
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Academic combinations</p>
+                @foreach ([['shreny-sections','Shreny sections'],['shreny-subjects','Shreny subjects']] as [$panel, $label])
+                <button wire:click="selectPanel('{{ $panel }}')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
+                @endforeach
+
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-cyan-400">Exam overview</p>
                 <button wire:click="selectPanel('exam-overview')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam
-                    overview</button>
-                <button wire:click="selectPanel('exam-basics')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-basics' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Basic
-                    settings</button>
-                <button wire:click="selectPanel('exam-combinations')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-combinations' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Combination
-                    settings</button>
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Overview</button>
+                @foreach ([['exam-combinations','Exam subjects'],['exam-marks-settings','Exam FM / PM'],['exam-script-distribution','Script distribution'],['exam-marks-entry','Marks entry'],['exam-marks-register','Mark register'],['exam-marks-sheets','Mark sheet']] as [$panel, $label])
+                <button wire:click="selectPanel('{{ $panel }}')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
+                @endforeach
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">System settings</p>
+                <button wire:click="selectPanel('user-profile')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'user-profile' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">User Profile</button>
             </nav>
         </aside>
         <section class="min-w-0 flex-1">
@@ -72,9 +60,7 @@ $panelTitles = [
             <main class="space-y-5 p-5">
                 @if($activePanel === 'overview' || $activePanel === 'exam-overview')
                 <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                    @foreach
-                    ([['Schools',$totalSchools,'text-cyan-600'],['Users',$totalUsers,'text-violet-600'],['Teachers',$totalTeachers,'text-amber-600'],['Students',$totalStudents,'text-emerald-600']]
-                    as [$label,$value,$color])
+                    @foreach ([['Schools',$totalSchools,'text-cyan-600'],['Users',$totalUsers,'text-violet-600'],['Teachers',$totalTeachers,'text-amber-600'],['Students',$totalStudents,'text-emerald-600']] as [$label,$value,$color])
                     <div class="rounded-lg border border-slate-200 bg-white p-4">
                         <p class="text-[11px] text-slate-500">{{ $label }}</p>
                         <p class="mt-1 text-2xl font-semibold {{ $color }}">{{ $value }}</p>
@@ -95,6 +81,14 @@ $panelTitles = [
                         <p class="text-xs text-slate-600">Basic definitions, exam structure, marks, modes, grades, and
                             Shreny-subject combinations.</p>
                     </div>
+                </div>
+                <div class="space-y-6">
+                    <livewire:school-comp />
+                    <livewire:session-comp />
+                    <livewire:shreny-comp />
+                    <livewire:section-comp />
+                    <livewire:subject-comp />
+                    <livewire:teacher-comp />
                 </div>
                 @elseif($activePanel === 'students')
                 <livewire:student-db-comp />
@@ -126,8 +120,28 @@ $panelTitles = [
                     <livewire:exam-mode-comp />
                     <livewire:exam-grade-comp />
                 </div>
+                @elseif($activePanel === 'exam-names')
+                <livewire:exam-name-comp />
+                @elseif($activePanel === 'exam-types')
+                <livewire:exam-type-comp />
+                @elseif($activePanel === 'exam-parts')
+                <livewire:exam-part-comp />
+                @elseif($activePanel === 'exam-modes')
+                <livewire:exam-mode-comp />
+                @elseif($activePanel === 'exam-grades')
+                <livewire:exam-grade-comp />
                 @elseif($activePanel === 'exam-combinations' || $activePanel === 'exam-overview')
                 <livewire:exam-settings />
+                @elseif($activePanel === 'exam-marks-settings')
+                <livewire:exam-marks-settings />
+                @elseif($activePanel === 'exam-marks-entry')
+                <livewire:exam-marks-entry-comp />
+                @elseif($activePanel === 'exam-marks-register')
+                <livewire:exam-marks-register-comp />
+                @elseif($activePanel === 'exam-marks-sheets')
+                <livewire:exam-marks-sheet-list-comp />
+                @elseif($activePanel === 'exam-script-distribution')
+                <livewire:exam-script-distribution-comp />
                 @endif
             </main>
         </section>

@@ -67,13 +67,13 @@ class StudentdbSeeder extends Seeder
                 'email' => 'student' . $i . '@example.com',
 
                 // Class relational mappings (integers)
-                'adm_shreny_id' => rand(1, 10),
-                'adm_section_id' => rand(1, 4),
+                'adm_shreny_id' => rand(1, 7),
+                'adm_section_id' => rand(1, 2),
 
                 // System tags
                 'order_id' => $i,
-                'school_id' => rand(1, 5),
-                'session_id' => rand(2024, 2026),
+                'school_id' => 1, //rand(1, 5),
+                'session_id' => 1, //rand(2024, 2026),
                 'is_active' => (rand(1, 10) > 1), // 90% chance to be active
                 'remarks' => rand(1, 5) == 5 ? 'Needs review' : null,
                 'created_at' => Carbon::now(),
