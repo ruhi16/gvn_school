@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Enums\UserRole;
 use App\Models\StudentDb;
 use App\Models\Teacher;
@@ -12,6 +13,7 @@ use Livewire\Component;
 
 class ProfileManagementComp extends Component
 {
+    use UsesActiveSchoolSession;
     public ?int $selectedUserId = null;
     public ?int $assignmentUserId = null;
     public ?int $assignmentTeacherId = null;
@@ -49,6 +51,8 @@ class ProfileManagementComp extends Component
 
     public function assignRole(): void
     {
+        if (!$this->canMutate()) return;
+
         $userId = $this->assignmentUserId;
         $user = User::findOrFail($userId);
         $role = $this->assignmentRole;
@@ -83,6 +87,8 @@ class ProfileManagementComp extends Component
 
     public function clearRole(int $userId): void
     {
+        if (!$this->canMutate()) return;
+
         $user = User::findOrFail($userId);
         $user->role = UserRole::VISITOR;
         $user->teacher_id = null;
@@ -94,6 +100,8 @@ class ProfileManagementComp extends Component
 
     public function assignStudent(int $userId): void
     {
+        if (!$this->canMutate()) return;
+
         $user = User::findOrFail($userId);
         $dob = $userId === $this->assignmentUserId
             ? $this->studentDobInput
@@ -135,6 +143,8 @@ class ProfileManagementComp extends Component
 
     public function removeStudent(int $userId): void
     {
+        if (!$this->canMutate()) return;
+
         $user = User::findOrFail($userId);
         $user->student_id = null;
         $user->save();
@@ -153,6 +163,8 @@ class ProfileManagementComp extends Component
 
     public function updatePassword(): void
     {
+        if (!$this->canMutate()) return;
+
         $this->validate([
             'newPassword' => ['required', 'string', 'min:8', 'same:newPasswordConfirmation'],
         ]);
@@ -166,6 +178,8 @@ class ProfileManagementComp extends Component
 
     public function deleteUser(int $userId): void
     {
+        if (!$this->canMutate()) return;
+
         User::findOrFail($userId)->delete();
         unset($this->roles[$userId], $this->teacherSelections[$userId], $this->studentDob[$userId], $this->studentSelections[$userId]);
         session()->flash('success', 'User deleted.');

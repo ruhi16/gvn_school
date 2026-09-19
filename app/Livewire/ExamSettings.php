@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\ExamMode;
 use App\Models\ExamName;
 use App\Models\ExamPart;
@@ -15,8 +16,11 @@ use Livewire\Component;
 
 class ExamSettings extends Component
 {
+    use UsesActiveSchoolSession;
+
     public function toggleExamType(int $examNameId, int $examTypeId): void
     {
+        if (!$this->canMutate()) return;
         $query = ExamShrenyPartFmPm::query()
             ->whereNull('shreny_id')
             ->whereNull('subject_id')
@@ -38,6 +42,7 @@ class ExamSettings extends Component
 
     public function toggleExamPart(int $examNameId, int $examTypeId, int $examPartId): void
     {
+        if (!$this->canMutate()) return;
         $this->ensureExamType($examNameId, $examTypeId);
 
         $configuration = $this->globalConfiguration($examNameId, $examTypeId, $examPartId);
@@ -58,6 +63,7 @@ class ExamSettings extends Component
 
     public function setExamMode(int $configurationId, int $examModeId): void
     {
+        if (!$this->canMutate()) return;
         $configuration = ExamShrenyPartFmPm::query()
             ->whereKey($configurationId)
             ->whereNull('shreny_id')
@@ -69,6 +75,7 @@ class ExamSettings extends Component
 
     public function toggleSubject(int $configurationId, int $shrenyId, int $subjectId): void
     {
+        if (!$this->canMutate()) return;
         $configuration = ExamShrenyPartFmPm::query()
             ->whereKey($configurationId)
             ->whereNull('shreny_id')
@@ -102,6 +109,7 @@ class ExamSettings extends Component
 
     public function toggleShrenySubject(int $shrenyId, int $subjectId): void
     {
+        if (!$this->canMutate()) return;
         ShrenySubject::query()->firstOrCreate([
             'shreny_id' => $shrenyId,
             'subject_id' => $subjectId,

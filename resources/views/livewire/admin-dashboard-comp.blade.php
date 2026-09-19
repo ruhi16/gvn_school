@@ -62,7 +62,7 @@ settings',
                     <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-600">Administration</p>
                     <h1 class="text-lg font-semibold tracking-tight">{{ $panelTitles[$activePanel] ?? 'Admin panel' }}
                     </h1>
-                </div><span class="rounded-full bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-700">ADMIN</span>
+                </div><div class="flex items-center gap-2"><button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button><span class="rounded-full bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-700">ADMIN</span></div>
             </header>
             <main class="space-y-5 p-5">
                 @if($activePanel === 'overview' || $activePanel === 'exam-overview')

@@ -1,9 +1,10 @@
 <div class="space-y-5">
-    <header class="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-5">
+    <header class="relative flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-5">
         <div>
             <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-600">Academic records</p>
             <h2 class="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Exam marks register</h2>
             <p class="mt-1 text-sm text-slate-500">{{ $session?->name ?? 'No active session' }}</p>
+            <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="mt-3 rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'View only' }}</button>
         </div>
         <div class="flex items-center gap-2">
             <div class="flex rounded border border-slate-300 bg-white p-0.5">

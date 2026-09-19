@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\School;
 use App\Models\StudentDb;
 use App\Models\Teacher;
@@ -10,6 +11,7 @@ use Livewire\Component;
 
 class AdminDashboardComp extends Component
 {
+    use UsesActiveSchoolSession;
     public string $activePanel = 'overview';
 
     public function mount(string $activePanel = 'overview'): void

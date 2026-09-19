@@ -2,12 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Section;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class SectionComp extends Component
 {
+    use UsesActiveSchoolSession;
     use WithPagination;
 
     public string $search = '', $name = '', $desc = '', $remarks = '';

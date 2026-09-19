@@ -5,15 +5,17 @@
             <h2 class="text-base font-semibold tracking-tight">{{ $title }}</h2>
             <p class="text-xs text-slate-500">Manage {{ strtolower($title) }} records.</p>
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <input wire:model.live.debounce.300ms="search" type="search" placeholder="Search {{ strtolower($title) }}..."
                 class="w-52 rounded-md border-slate-300 px-3 py-2 text-xs shadow-sm focus:border-cyan-500 focus:ring-cyan-500">
-            <button wire:click="create" type="button" class="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700">+ Add {{ strtolower($singular) }}</button>
+            <button wire:click="toggleMutations" type="button" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded-md border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
+            <button wire:click="create" type="button" @disabled(!$mutationsEnabled) class="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700">+ Add {{ strtolower($singular) }}</button>
         </div>
     </div>
     @if (session('success'))
     <div class="mb-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{{ session('success') }}</div>
     @endif
+    @if (session('error'))<div class="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">{{ session('error') }}</div>@endif
     <div class="overflow-x-auto rounded-md border border-slate-200">
         <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
             <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
@@ -26,7 +28,7 @@
                     <td class="px-3 py-2.5 font-semibold text-slate-800">{{ $record->name }}</td>
                     <td class="px-3 py-2.5 text-slate-600">{{ $record->description ?: '—' }}</td>
                     <td class="px-3 py-2.5"><span class="rounded-full px-2 py-1 text-[10px] font-semibold {{ $record->is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">{{ $record->is_active ? 'Active' : 'Inactive' }}</span></td>
-                    <td class="whitespace-nowrap px-3 py-2.5 text-right"><button wire:click="edit({{ $record->id }})" class="mr-2 font-semibold text-cyan-700">Edit</button><button wire:click="delete({{ $record->id }})" wire:confirm="Delete this record?" class="font-semibold text-rose-600">Delete</button></td>
+                    <td class="whitespace-nowrap px-3 py-2.5 text-right"><button wire:click="edit({{ $record->id }})" @disabled(!$mutationsEnabled) class="mr-2 font-semibold text-cyan-700">Edit</button><button wire:click="delete({{ $record->id }})" wire:confirm="Delete this record?" @disabled(!$mutationsEnabled) class="font-semibold text-rose-600">Delete</button></td>
                 </tr>
                 @empty
                 <tr><td colspan="5" class="px-3 py-10 text-center text-xs text-slate-500">No {{ strtolower($title) }} found.</td></tr>

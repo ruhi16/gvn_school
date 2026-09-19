@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Shreny;
 use App\Models\ShrenySubject;
 use App\Models\Subject;
@@ -9,6 +10,7 @@ use Livewire\Component;
 
 class ShrenySubjectComp extends Component
 {
+    use UsesActiveSchoolSession;
     public bool $showAssignedOnly = false;
 
     public function toggleAssignedOnly(): void
@@ -18,6 +20,7 @@ class ShrenySubjectComp extends Component
 
     public function toggleAssignment(int $shrenyId, int $subjectId): void
     {
+        if (!$this->canMutate()) return;
         $mapping = ShrenySubject::query()
             ->where('shreny_id', $shrenyId)
             ->where('subject_id', $subjectId)

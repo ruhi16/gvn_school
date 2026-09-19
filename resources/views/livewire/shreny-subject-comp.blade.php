@@ -13,6 +13,7 @@
                 <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition {{ $showAssignedOnly ? 'translate-x-6' : 'translate-x-1' }}"></span>
             </button>
         </label>
+        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">

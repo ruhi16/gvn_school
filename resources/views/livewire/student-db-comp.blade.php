@@ -6,7 +6,9 @@
             <p class="mt-1 text-sm text-slate-500">Compact student admission records.</p>
         </div>
         <a href="{{ route('admin.students.create') }}"
+            @if(!$mutationsEnabled) aria-disabled="true" onclick="event.preventDefault()" @endif
             class="rounded bg-cyan-600 px-3 py-2 text-xs font-semibold text-white hover:bg-cyan-500">+ New admission</a>
+        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     @if (session('success'))

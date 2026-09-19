@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\StudentDb;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithFileUploads;
 class StudentDbForm extends Component
 {
     use WithFileUploads;
+    use UsesActiveSchoolSession;
 
     public ?int $studentId = null;
     public string $name = '', $gender = '', $fname = '', $mname = '', $dob = '';
@@ -70,6 +72,7 @@ class StudentDbForm extends Component
 
     public function save(): void
     {
+        if (!$this->canMutate()) return;
         $data = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'in:Male,Female,Other'],

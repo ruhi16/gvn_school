@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Session extends Model
 {
-    protected $fillable = ['name', 'start_date', 'end_date', 'order_id', 'status', 'school_id', 'session_id', 'is_active', 'remarks'];
+    protected $fillable = ['name', 'start_date', 'end_date', 'order_id', 'status', 'school_id', 'is_active', 'remarks'];
 
     protected $casts = ['start_date' => 'date', 'end_date' => 'date', 'is_active' => 'boolean'];
 }

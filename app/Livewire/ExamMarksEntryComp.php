@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\ExamMarksEntry;
 use App\Models\ExamName;
 use App\Models\ExamPart;
@@ -20,6 +21,7 @@ use Livewire\Component;
 
 class ExamMarksEntryComp extends Component
 {
+    use UsesActiveSchoolSession;
     public ?int $currentSessionId = null;
     public ?int $selectedShrenyId = null;
     public ?int $selectedSectionId = null;
@@ -57,6 +59,10 @@ class ExamMarksEntryComp extends Component
 
     public function saveMark(int $studentId): void
     {
+        if (!$this->canMutate()) {
+            return;
+        }
+
         $this->ensureEntryScope();
         abort_if(ExamMarksEntry::query()->where($this->scopeKey())->where('is_finalized', true)->exists(), 422, 'Finalized marks cannot be changed.');
         $this->validateMark($studentId);
@@ -75,6 +81,7 @@ class ExamMarksEntryComp extends Component
                 'obtained_marks' => $value,
                 'is_finalized' => false,
                 'is_active' => true,
+                'school_id' => $this->activeSchoolId(),
             ],
         );
     }
@@ -89,18 +96,42 @@ class ExamMarksEntryComp extends Component
 
     public function finalizeMarks(): void
     {
+        if (!$this->canMutate()) {
+            return;
+        }
+
         $this->ensureEntryScope();
         foreach ($this->students() as $student) {
             $this->saveMark($student->id);
         }
 
         ExamMarksEntry::query()->where($this->scopeKey())->update(['is_finalized' => true]);
+        ExamScriptDistribution::query()->where($this->distributionScope())->update(['is_finalized' => true]);
     }
 
     public function unfinalizeMarks(): void
     {
+        if (!$this->canMutate()) {
+            return;
+        }
+
         $this->ensureEntryScope();
         ExamMarksEntry::query()->where($this->scopeKey())->update(['is_finalized' => false]);
+        ExamScriptDistribution::query()->where($this->distributionScope())->update(['is_finalized' => false]);
+    }
+
+    private function distributionScope(): array
+    {
+        return [
+            'shreny_id' => $this->selectedShrenyId,
+            'section_id' => $this->selectedSectionId,
+            'subject_id' => $this->selectedSubjectId,
+            'exam_name_id' => $this->selectedExamNameId,
+            'exam_type_id' => $this->selectedExamTypeId,
+            'exam_part_id' => $this->selectedExamPartId,
+            'session_id' => $this->currentSessionId,
+            'school_id' => $this->activeSchoolId(),
+        ];
     }
 
     private function validateMark(int $studentId): void
@@ -122,6 +153,7 @@ class ExamMarksEntryComp extends Component
     private function activeSession(): ?Session
     {
         return Session::query()->where('is_active', true)
+            ->where('school_id', $this->activeSchoolId())
             ->where(function ($query) {
                 $query->whereRaw('LOWER(status) = ?', ['active'])->orWhereNull('status');
             })->orderByDesc('id')->first();
@@ -132,6 +164,7 @@ class ExamMarksEntryComp extends Component
         return StudentCr::query()
             ->with('student')
             ->where('session_id', $this->currentSessionId)
+            ->where('school_id', $this->activeSchoolId())
             ->where('curr_shreny_id', $this->selectedShrenyId)
             ->where('curr_section_id', $this->selectedSectionId)
             ->where('is_active', true)
@@ -150,6 +183,7 @@ class ExamMarksEntryComp extends Component
             'exam_type_id' => $this->selectedExamTypeId,
             'exam_part_id' => $this->selectedExamPartId,
             'session_id' => $this->currentSessionId,
+            'school_id' => $this->activeSchoolId(),
         ];
     }
 
@@ -187,7 +221,12 @@ class ExamMarksEntryComp extends Component
         $examSubjects = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get(['shreny_id', 'subject_id'])->unique(fn($row) => $row->shreny_id . ':' . $row->subject_id)->groupBy('shreny_id');
         $examAssignments = ExamShrenyPartFmPm::query()->whereNotNull('shreny_id')->whereNotNull('subject_id')->get()
             ->keyBy(fn($row) => $row->shreny_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
-        $entries = ExamMarksEntry::query()->when($session, fn($query) => $query->where('session_id', $session->id))->get()->keyBy(fn($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id . ':' . $row->student_cr_id);
+        $distributions = ExamScriptDistribution::query()
+            ->when($session, fn($query) => $query->where('session_id', $session->id))
+            ->where('school_id', $this->activeSchoolId())
+            ->get()
+            ->keyBy(fn($distribution) => $distribution->shreny_id . ':' . $distribution->section_id . ':' . $distribution->subject_id . ':' . $distribution->exam_name_id . ':' . $distribution->exam_type_id . ':' . $distribution->exam_part_id);
+        $entries = ExamMarksEntry::query()->when($session, fn($query) => $query->where('session_id', $session->id))->where('school_id', $this->activeSchoolId())->get()->keyBy(fn($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id . ':' . $row->student_cr_id);
         $selectedStudents = $this->showEntry ? $this->students() : collect();
         $selectedSubject = $subjects[$this->selectedSubjectId] ?? null;
         $selectedShreny = $shrenies[$this->selectedShrenyId] ?? null;
@@ -200,11 +239,11 @@ class ExamMarksEntryComp extends Component
             ? $configurations->filter(fn($configuration) => isset($examAssignments[$this->selectedShrenyId . ':' . $this->selectedSubjectId . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id]))
             : collect();
         $selectedCombinationEntries = $this->showEntry
-            ? ExamMarksEntry::query()->where('shreny_id', $this->selectedShrenyId)->where('section_id', $this->selectedSectionId)->where('subject_id', $this->selectedSubjectId)->where('session_id', $this->currentSessionId)->get()
+            ? ExamMarksEntry::query()->where('shreny_id', $this->selectedShrenyId)->where('section_id', $this->selectedSectionId)->where('subject_id', $this->selectedSubjectId)->where('session_id', $this->currentSessionId)->where('school_id', $this->activeSchoolId())->get()
                 ->keyBy(fn($entry) => $entry->exam_name_id . ':' . $entry->exam_type_id . ':' . $entry->exam_part_id . ':' . $entry->student_cr_id)
             : collect();
         $selectedCombinationTeachers = $this->showEntry
-            ? ExamScriptDistribution::query()->where('shreny_id', $this->selectedShrenyId)->where('section_id', $this->selectedSectionId)->where('subject_id', $this->selectedSubjectId)->where('session_id', $this->currentSessionId)->get()
+            ? ExamScriptDistribution::query()->where('shreny_id', $this->selectedShrenyId)->where('section_id', $this->selectedSectionId)->where('subject_id', $this->selectedSubjectId)->where('session_id', $this->currentSessionId)->where('school_id', $this->activeSchoolId())->get()
                 ->keyBy(fn($distribution) => $distribution->exam_name_id . ':' . $distribution->exam_type_id . ':' . $distribution->exam_part_id)
             : collect();
         $teachers = Teacher::query()->where('is_active', true)->get()->keyBy('id');
@@ -222,6 +261,6 @@ class ExamMarksEntryComp extends Component
             })
             : collect();
 
-        return view('livewire.exam-marks-entry-comp', compact('session', 'shrenySections', 'shrenies', 'sections', 'subjects', 'examNames', 'examTypes', 'examParts', 'configurations', 'examSubjects', 'examAssignments', 'entries', 'selectedStudents', 'selectedSubject', 'selectedShreny', 'selectedSection', 'selectedConfiguration', 'isFinalized', 'isIssued', 'selectedCombinations', 'selectedCombinationEntries', 'selectedCombinationTeachers', 'selectedCombinationStates', 'teachers'));
+        return view('livewire.exam-marks-entry-comp', compact('session', 'shrenySections', 'shrenies', 'sections', 'subjects', 'examNames', 'examTypes', 'examParts', 'configurations', 'examSubjects', 'examAssignments', 'distributions', 'entries', 'selectedStudents', 'selectedSubject', 'selectedShreny', 'selectedSection', 'selectedConfiguration', 'isFinalized', 'isIssued', 'selectedCombinations', 'selectedCombinationEntries', 'selectedCombinationTeachers', 'selectedCombinationStates', 'teachers'));
     }
 }

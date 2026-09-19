@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Section;
 use App\Models\Shreny;
 use App\Models\ShrenySection;
@@ -12,6 +13,7 @@ use Livewire\Component;
 
 class ShrenySectionComp extends Component
 {
+    use UsesActiveSchoolSession;
     public bool $showAssignedOnly = false;
     public ?int $selectedShrenyId = null;
     public ?int $selectedSectionId = null;
@@ -24,6 +26,7 @@ class ShrenySectionComp extends Component
 
     public function toggleAssignment(int $shrenyId, int $sectionId): void
     {
+        if (!$this->canMutate()) return;
         $mapping = ShrenySection::query()
             ->where('shreny_id', $shrenyId)
             ->where('section_id', $sectionId)
@@ -53,6 +56,7 @@ class ShrenySectionComp extends Component
 
     public function assignAutomatically(): void
     {
+        if (!$this->canMutate()) return;
         $students = $this->selectedStudents();
 
         if ($students->isEmpty()) {
@@ -70,6 +74,7 @@ class ShrenySectionComp extends Component
 
     public function assignManually(): void
     {
+        if (!$this->canMutate()) return;
         $students = $this->selectedStudents();
 
         if ($students->isEmpty()) {
@@ -108,6 +113,7 @@ class ShrenySectionComp extends Component
 
     public function updateRollNumber(int $studentId): void
     {
+        if (!$this->canMutate()) return;
         $student = $this->selectedStudents()->firstWhere('id', $studentId);
         $rollNumber = (int) ($this->rollNumbers[$studentId] ?? 0);
 

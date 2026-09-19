@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\ExamName;
 use App\Models\ExamPart;
 use App\Models\ExamShrenyPartFmPm;
@@ -12,8 +13,10 @@ use Livewire\Component;
 
 class ExamMarksSettings extends Component
 {
+    use UsesActiveSchoolSession;
     public function updateMarks(int $configurationId, int $shrenyId, int $subjectId, string $field, mixed $value): void
     {
+        if (!$this->canMutate()) return;
         abort_unless(in_array($field, ['full_marks', 'pass_marks', 'time_alloted'], true), 422);
 
         $configuration = ExamShrenyPartFmPm::query()

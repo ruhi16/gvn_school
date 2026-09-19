@@ -1,9 +1,10 @@
 <div class="space-y-5">
-    <header class="border-b border-slate-200 pb-5">
+    <header class="relative border-b border-slate-200 pb-5">
         <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-600">Exam Settings</p>
         <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Exam marks and time</h1>
         <p class="mt-1 text-sm text-slate-500">Set full marks, pass marks, and allotted minutes for every shreny
             subject.</p>
+        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="absolute right-0 top-0 rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -46,15 +47,15 @@
                             <label class="text-[10px] font-semibold uppercase text-slate-500">Full<input type="number"
                                     min="0" step="1" value="{{ $mark?->full_marks }}"
                                     wire:change="updateMarks({{ $configuration->id }}, {{ $shreny->id }}, {{ $shrenySubject->subject_id }}, 'full_marks', $event.target.value)"
-                                    class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
+                                    @disabled(!$mutationsEnabled) class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
                             <label class="text-[10px] font-semibold uppercase text-slate-500">Pass<input type="number"
                                     min="0" step="1" value="{{ $mark?->pass_marks }}"
                                     wire:change="updateMarks({{ $configuration->id }}, {{ $shreny->id }}, {{ $shrenySubject->subject_id }}, 'pass_marks', $event.target.value)"
-                                    class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
+                                    @disabled(!$mutationsEnabled) class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
                             <label class="text-[10px] font-semibold uppercase text-slate-500">Minutes<input
                                     type="number" min="0" step="1" value="{{ $mark?->time_alloted }}"
                                     wire:change="updateMarks({{ $configuration->id }}, {{ $shreny->id }}, {{ $shrenySubject->subject_id }}, 'time_alloted', $event.target.value)"
-                                    class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
+                                    @disabled(!$mutationsEnabled) class="mt-1 w-full rounded border-slate-300 px-2 py-1.5 text-sm text-slate-900 focus:border-cyan-500 focus:ring-cyan-500"></label>
                         </div>
                         @else
                         <span class="text-xs text-slate-400">Not selected</span>

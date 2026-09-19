@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Section;
 use App\Models\Session;
 use App\Models\Shreny;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 class StudentCrComp extends Component
 {
     use WithPagination;
+    use UsesActiveSchoolSession;
 
     public string $search = '';
     public ?int $selectedShrenyId = null;
@@ -49,6 +51,7 @@ class StudentCrComp extends Component
 
     public function assignAutomatically(): void
     {
+        if (!$this->canMutate()) return;
         $students = $this->selectedStudents();
         if ($students->isEmpty()) {
             session()->flash('error', 'No newly admitted students found for this Shreny and Section.');
@@ -66,6 +69,7 @@ class StudentCrComp extends Component
 
     public function assignManually(): void
     {
+        if (!$this->canMutate()) return;
         $students = $this->selectedStudents();
         if ($students->isEmpty()) {
             session()->flash('error', 'No newly admitted students found for this Shreny and Section.');
@@ -99,6 +103,7 @@ class StudentCrComp extends Component
 
     public function updateRollNumber(int $studentId): void
     {
+        if (!$this->canMutate()) return;
         $student = $this->selectedStudents()->firstWhere('id', $studentId);
         $rollNumber = (int) ($this->rollNumbers[$studentId] ?? 0);
         if (!$student || $rollNumber < 1) {

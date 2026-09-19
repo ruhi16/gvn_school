@@ -2,12 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Teacher;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class TeacherComp extends Component
 {
+    use UsesActiveSchoolSession;
     use WithPagination;
 
     public string $search = '', $name = '', $desc = '', $email = '', $mobile = '', $high_qual = '', $high_qual_subject = '', $prof_qual = '', $prof_qual_subject = '', $vill = '', $post_office = '', $police_station = '', $district = '', $block = '', $pincode = '', $remarks = '';

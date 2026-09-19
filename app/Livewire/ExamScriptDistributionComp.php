@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\ExamName;
 use App\Models\ExamPart;
 use App\Models\ExamScriptDistribution;
@@ -18,6 +19,7 @@ use Livewire\Component;
 
 class ExamScriptDistributionComp extends Component
 {
+    use UsesActiveSchoolSession;
     public bool $showModal = false;
     public ?int $selectedShrenyId = null;
     public ?int $selectedSectionId = null;
@@ -54,6 +56,10 @@ class ExamScriptDistributionComp extends Component
 
     public function saveTeacherAssignment(): void
     {
+        if (!$this->canMutate()) {
+            return;
+        }
+
         $this->validate([
             'selectedTeacherId' => ['required', 'integer', 'exists:teachers,id'],
         ]);
@@ -83,6 +89,7 @@ class ExamScriptDistributionComp extends Component
                 'name' => 'Exam script distribution',
                 'teacher_id' => $this->selectedTeacherId,
                 'is_active' => true,
+                'school_id' => $this->activeSchoolId(),
             ],
         );
 
@@ -124,6 +131,7 @@ class ExamScriptDistributionComp extends Component
             ->where('exam_type_id', $this->selectedExamTypeId)
             ->where('exam_part_id', $this->selectedExamPartId)
             ->where('session_id', $this->currentSessionId)
+            ->where('school_id', $this->activeSchoolId())
             ->first();
     }
 
@@ -164,6 +172,7 @@ class ExamScriptDistributionComp extends Component
             ->groupBy('shreny_id');
         $distributions = ExamScriptDistribution::query()
             ->when($session, fn($query) => $query->where('session_id', $session->id))
+            ->where('school_id', $this->activeSchoolId())
             ->get()
             ->keyBy(fn($row) => $row->shreny_id . ':' . $row->section_id . ':' . $row->subject_id . ':' . $row->exam_name_id . ':' . $row->exam_type_id . ':' . $row->exam_part_id);
 

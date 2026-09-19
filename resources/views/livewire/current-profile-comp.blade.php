@@ -1,5 +1,6 @@
 <div class="card mb-4">
     <div class="card-body">
+        <div class="mb-3 flex justify-end"><button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button></div>
         <h5>Verify student profile</h5>
         <p>Enter your date of birth, review the matching records, and select your profile.</p>
         <input type="date" wire:model.live="dob" class="form-control mb-3">

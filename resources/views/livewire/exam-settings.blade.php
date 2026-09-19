@@ -1,8 +1,9 @@
 <div class="space-y-8">
 	<section>
-		<header class="mb-4 border-b border-slate-200 pb-4">
+		<header class="relative mb-4 border-b border-slate-200 pb-4">
 			<h2 class="text-lg font-semibold text-slate-950">Exam type and Exam part setup</h2>
 			<p class="mt-1 text-sm text-slate-500">Select exam types, then choose their parts and mode.</p>
+			<button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="absolute right-0 top-0 rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
 		</header>
 
 		<div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -36,6 +37,7 @@
 													<input
 														type="checkbox"
 														wire:click="toggleExamType({{ $examName->id }}, {{ $examType->id }})"
+														@disabled(!$mutationsEnabled)
 														@checked($typeSelected)
 														class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
 													>
@@ -65,6 +67,7 @@
 																	<input
 																		type="checkbox"
 																		wire:click="toggleExamPart({{ $examName->id }}, {{ $examType->id }}, {{ $examPart->id }})"
+																		@disabled(!$mutationsEnabled)
 																		@checked($configuration)
 																		class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
 																	>
@@ -74,6 +77,7 @@
 																@if ($configuration)
 																	<select
 																		wire:change="setExamMode({{ $configuration->id }}, $event.target.value)"
+																		@disabled(!$mutationsEnabled)
 																		class="w-28 rounded border-slate-300 px-2 py-1 text-xs"
 																	>
 																		<option value="">Mode</option>

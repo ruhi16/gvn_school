@@ -9,6 +9,7 @@
         <a href="{{ route('admin.students') }}"
             class="rounded border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Back
             to StudentDB</a>
+        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     <form wire:submit="save" class="space-y-4">
@@ -16,7 +17,7 @@
         <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4"><a
                 href="{{ route('admin.students') }}"
                 class="px-3 py-2 text-xs font-semibold text-slate-600">Cancel</a><button type="submit"
-                class="rounded bg-cyan-600 px-4 py-2 text-xs font-semibold text-white hover:bg-cyan-500"
+                @disabled(!$mutationsEnabled) class="rounded bg-cyan-600 px-4 py-2 text-xs font-semibold text-white hover:bg-cyan-500"
                 wire:loading.attr="disabled">Save student</button></div>
     </form>
 </div>

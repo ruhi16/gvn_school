@@ -2,11 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Support\ExamMarksRegisterData;
 use Livewire\Component;
 
 class ExamMarksRegisterComp extends Component
 {
+    use UsesActiveSchoolSession;
     public string $viewMode = 'compact';
 
     public function setViewMode(string $viewMode): void

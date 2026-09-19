@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\StudentDb;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -9,11 +10,14 @@ use Livewire\Component;
 
 class CurrentProfileComp extends Component
 {
+    use UsesActiveSchoolSession;
     public string $dob = '';
     public ?int $selectedStudentId = null;
 
     public function verify(): void
     {
+        if (!$this->canMutate()) return;
+
         $this->validate(['dob' => ['required', 'date']]);
         if (!$this->selectedStudentId) {
             $this->addError('selectedStudentId', 'Select a matching student record.');

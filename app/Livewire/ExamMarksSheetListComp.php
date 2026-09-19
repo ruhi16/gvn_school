@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Section;
 use App\Models\Session;
 use App\Models\Shreny;
@@ -10,6 +11,7 @@ use Livewire\Component;
 
 class ExamMarksSheetListComp extends Component
 {
+    use UsesActiveSchoolSession;
     public function render()
     {
         $session = Session::query()->where('is_active', true)

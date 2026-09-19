@@ -1,9 +1,11 @@
 <div class="space-y-5">
-    <header class="border-b border-slate-200 pb-5">
+    <header class="relative border-b border-slate-200 pb-5">
         <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-600">Exam settings</p>
         <h2 class="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Exam marks entry</h2>
         <p class="mt-1 text-sm text-slate-500">Select a subject and exam combination to enter marks for enrolled
             students.</p>
+        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}"
+            class="absolute right-0 top-0 rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     @if (!$session)
@@ -54,12 +56,16 @@
                             $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' .
                             $configuration->exam_part_id)
                             @php($isAllotted = isset($examAssignments[$combinationKey]))
+                            @php($distribution = $distributions[$shrenySection->shreny_id . ':' . $shrenySection->section_id . ':' . $subject->id . ':' . $configuration->exam_name_id . ':' . $configuration->exam_type_id . ':' . $configuration->exam_part_id] ?? null)
                             <td class="px-4 py-3">
                                 @if ($isAllotted)
                                 <button type="button"
                                     wire:click="openEntry({{ $shrenySection->shreny_id }}, {{ $shrenySection->section_id }}, {{ $subject->id }}, {{ $configuration->exam_name_id }}, {{ $configuration->exam_type_id }}, {{ $configuration->exam_part_id }})"
-                                    class="w-full rounded border border-slate-300 px-3 py-2 text-left text-xs text-cyan-700 hover:border-cyan-500 hover:bg-cyan-50">Enter
-                                    marks</button>
+                                    class="w-full rounded border border-slate-300 px-3 py-2 text-left text-xs text-cyan-700 hover:border-cyan-500 hover:bg-cyan-50">
+                                    <span class="block">Enter marks</span>
+                                    <span class="mt-1 block text-[11px] {{ $distribution?->is_finalized ? 'font-semibold text-emerald-700' : 'text-slate-500' }}">{{ $distribution?->is_finalized ? 'Finalized' : 'Not finalized' }}</span>
+                                    <span class="mt-1 block text-[11px] text-slate-500">Teacher: {{ $distribution?->teacher_id ? ($teachers[$distribution->teacher_id]?->name ?? 'Not assigned') : 'Not assigned' }}</span>
+                                </button>
                                 @endif
                             </td>
                             @endforeach
@@ -172,13 +178,13 @@
                                     class="w-32 rounded border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-600">
                                 @else
                                 <input type="number" min="0" step="1" wire:model="marks.{{ $student->id }}"
-                                    wire:change="saveMark({{ $student->id }})" @disabled($isFinalized)
+                                    wire:change="saveMark({{ $student->id }})" @disabled(!$mutationsEnabled || $isFinalized)
                                     class="w-32 rounded border-slate-300 px-3 py-2 text-sm focus:border-cyan-500 focus:ring-cyan-500">
                                 @endif
                                 <label
                                     class="flex items-center gap-2 text-xs font-semibold {{ ($absent[$student->id] ?? false) ? 'text-rose-600' : 'text-slate-600' }}"><input
                                         type="checkbox" wire:model.live="absent.{{ $student->id }}"
-                                        wire:change="saveMark({{ $student->id }})" @disabled($isFinalized)
+                                        wire:change="saveMark({{ $student->id }})" @disabled(!$mutationsEnabled || $isFinalized)
                                         class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500">
                                     AB</label>
                             </div>

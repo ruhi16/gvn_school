@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\StudentDb;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class StudentDbComp extends Component
 {
     use WithPagination;
+    use UsesActiveSchoolSession;
 
     public string $search = '';
 
@@ -22,6 +24,7 @@ class StudentDbComp extends Component
 
     public function delete(int $id): void
     {
+        if (!$this->canMutate()) return;
         $student = StudentDb::findOrFail($id);
 
         foreach (['dp_img_ref', 'dob_cert_img_ref', 'aadhaar_img_ref'] as $column) {

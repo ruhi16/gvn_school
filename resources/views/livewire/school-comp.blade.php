@@ -1,7 +1,7 @@
 <div>
     <div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div><h2 class="text-base font-semibold tracking-tight">Schools</h2><p class="text-xs text-slate-500">Manage registered schools and location details.</p></div>
-        <div class="flex gap-2"><input wire:model.live.debounce.300ms="search" type="search" placeholder="Search schools..." class="w-52 rounded-md border-slate-300 px-3 py-2 text-xs shadow-sm focus:border-cyan-500 focus:ring-cyan-500"><button wire:click="create" type="button" class="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700">+ Add school</button></div>
+        <div class="flex flex-wrap gap-2"><input wire:model.live.debounce.300ms="search" type="search" placeholder="Search schools..." class="w-52 rounded-md border-slate-300 px-3 py-2 text-xs shadow-sm focus:border-cyan-500 focus:ring-cyan-500"><button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button><button wire:click="create" type="button" @disabled(!$mutationsEnabled) class="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700">+ Add school</button></div>
     </div>
 
     @if (session('success'))

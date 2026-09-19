@@ -1,8 +1,9 @@
 <div class="space-y-5">
-    <header class="border-b border-slate-200 pb-5">
+    <header class="relative border-b border-slate-200 pb-5">
         <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-600">Exam settings</p>
         <h2 class="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Exam script distribution</h2>
         <p class="mt-1 text-sm text-slate-500">Assign subject scripts to teachers for each Shreny and Section.</p>
+        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="absolute right-0 top-0 rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     @if (!$session)
@@ -56,6 +57,7 @@
                             <td class="px-4 py-3">
                                 <button type="button"
                                     wire:click="openTeacherModal({{ $shrenySection->shreny_id }}, {{ $shrenySection->section_id }}, {{ $subject->id }}, {{ $configuration->exam_name_id }}, {{ $configuration->exam_type_id }}, {{ $configuration->exam_part_id }})"
+                                    @disabled(!$mutationsEnabled)
                                     class="w-full rounded border border-slate-300 px-3 py-2 text-left text-xs hover:border-cyan-500 hover:bg-cyan-50">
                                     @if ($distribution && isset($teachers[$distribution->teacher_id]))
                                     <span class="font-medium text-cyan-700">{{
@@ -115,7 +117,7 @@
             <div class="mt-6 flex justify-end gap-2">
                 <button type="button" wire:click="closeModal"
                     class="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Cancel</button>
-                <button type="button" wire:click="saveTeacherAssignment"
+                <button type="button" wire:click="saveTeacherAssignment" @disabled(!$mutationsEnabled)
                     class="rounded bg-cyan-600 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-700">Save
                     assignment</button>
             </div>

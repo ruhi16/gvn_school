@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\School;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -9,6 +10,7 @@ use Livewire\WithPagination;
 class SchoolComp extends Component
 {
     use WithPagination;
+    use UsesActiveSchoolSession;
 
     public string $search = '';
     public bool $showModal = false;
@@ -35,12 +37,14 @@ class SchoolComp extends Component
 
     public function create(): void
     {
+        if (!$this->canMutate()) return;
         $this->resetForm();
         $this->showModal = true;
     }
 
     public function edit(int $id): void
     {
+        if (!$this->canMutate()) return;
         $school = School::findOrFail($id);
         $this->schoolId = $school->id;
         $this->name = $school->name;
@@ -61,6 +65,7 @@ class SchoolComp extends Component
 
     public function save(): void
     {
+        if (!$this->canMutate()) return;
         $isEditing = $this->schoolId !== null;
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -85,6 +90,7 @@ class SchoolComp extends Component
 
     public function delete(int $id): void
     {
+        if (!$this->canMutate()) return;
         School::findOrFail($id)->delete();
         session()->flash('success', 'School deleted.');
     }
