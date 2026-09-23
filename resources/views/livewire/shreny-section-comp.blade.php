@@ -53,6 +53,7 @@
                 <label class="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm transition hover:bg-slate-50">
                     <input type="checkbox" wire:click="toggleAssignment({{ $shreny->id }}, {{ $section->id }})"
                         @checked(in_array($section->id, $selectedSections, true))
+                        @disabled(!$mutationsEnabled)
                     class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
                     >
                     <span class="flex-1 text-slate-700">{{ $section->name }}</span>

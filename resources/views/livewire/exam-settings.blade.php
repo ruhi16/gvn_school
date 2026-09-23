@@ -187,6 +187,7 @@
 												<input
 													type="checkbox"
 													wire:click="toggleShrenySubject({{ $shreny->id }}, {{ $subject->id }})"
+															@disabled(!$mutationsEnabled)
 													@checked($subjectSelectedForAll)
 													class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
 												>
@@ -206,6 +207,7 @@
 													<input
 														type="checkbox"
 														wire:click="toggleSubject({{ $configuration->id }}, {{ $shreny->id }}, {{ $subject->id }})"
+															@disabled(!$mutationsEnabled)
 														@checked($subjectAssigned)
 														class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
 													>

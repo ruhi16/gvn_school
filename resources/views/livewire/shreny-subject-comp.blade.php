@@ -34,7 +34,7 @@
                         @forelse ($subjects as $subject)
                         @if (!$showAssignedOnly || in_array($subject->id, $selectedSubjects, true))
                         <label class="flex cursor-pointer items-center gap-3 border-b border-slate-100 px-1 py-3 text-sm transition hover:bg-slate-50">
-                            <input type="checkbox" wire:click="toggleAssignment({{ $shreny->id }}, {{ $subject->id }})" @checked(in_array($subject->id, $selectedSubjects, true)) class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500">
+                            <input type="checkbox" wire:click="toggleAssignment({{ $shreny->id }}, {{ $subject->id }})" @checked(in_array($subject->id, $selectedSubjects, true)) @disabled(!$mutationsEnabled) class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500">
                             <span class="text-slate-700">{{ $subject->name }}</span>
                         </label>
                         @endif

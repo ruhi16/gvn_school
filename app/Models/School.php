@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class School extends Model
 {
@@ -24,4 +25,9 @@ class School extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function notices(): HasMany
+    {
+        return $this->hasMany(Notice::class);
+    }
 }

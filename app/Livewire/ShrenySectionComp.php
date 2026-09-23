@@ -134,6 +134,7 @@ class ShrenySectionComp extends Component
 
     public function removeAssignment(int $studentId): void
     {
+        if (!$this->canMutate()) return;
         if (!$this->hasSelectedCombination()) {
             return;
         }

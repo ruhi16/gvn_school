@@ -8,7 +8,7 @@ $panelTitles = [
 'exam-grades' => 'Exam grades', 'exam-combinations' => 'Exam combination settings', 'exam-marks-settings' => 'Marks
 settings',
 'exam-marks-entry' => 'Marks entry', 'exam-marks-register' => 'Marks register', 'exam-marks-sheets' => 'Marks sheets',
-'exam-script-distribution' => 'Script distribution', 'user-profile' => 'User Profile',
+'exam-script-distribution' => 'Script distribution', 'notices' => 'Notices', 'user-profile' => 'User Profile',
 ];
 @endphp
 <div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900">
@@ -36,6 +36,8 @@ settings',
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">School</p>
                 <button wire:click="selectPanel('overview')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Overview</button>
+                <button wire:click="selectPanel('notices')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'notices' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Notices</button>
 
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Academic combinations</p>
                 @foreach ([['shreny-sections', 'Shreny sections'], ['shreny-subjects', 'Shreny subjects']] as [$panel, $label])
@@ -115,6 +117,8 @@ settings',
                 <livewire:subject-comp />
                 @elseif($activePanel === 'teacher')
                 <livewire:teacher-comp />
+                @elseif($activePanel === 'notices')
+                <livewire:notice-comp />
                 @elseif($activePanel === 'user-profile')
                 <livewire:profile-management-comp />
                 @elseif($activePanel === 'shreny-sections')

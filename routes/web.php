@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Models\Notice;
 use App\Models\StudentDb;
 use App\Models\StudentCr;
 use App\Support\ExamMarksRegisterData;
@@ -11,7 +12,13 @@ use Spatie\LaravelPdf\Facades\Pdf;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    $notices = Notice::query()
+        ->where('is_active', true)
+        ->orderByDesc('upload_dt')
+        ->orderByDesc('id')
+        ->get();
+
+    return view('welcome', compact('notices'));
 });
 
 Route::get('/dashboard', function () {

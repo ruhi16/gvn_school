@@ -116,6 +116,54 @@
         </div>
     </header>
 
+    <!-- Notices Section -->
+    <section id="notices" class="py-16 bg-white border-y border-amber-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+                <div>
+                    <span class="text-sm font-bold uppercase tracking-wider text-orange-600">School updates</span>
+                    <h2 class="font-brand font-bold text-3xl sm:text-4xl text-slate-800 mt-2">Latest Notices</h2>
+                </div>
+                <p class="text-gray-500 text-sm">Important announcements, dates, and documents for families.</p>
+            </div>
+
+            <div class="max-h-[32rem] overflow-y-auto pr-2 space-y-4">
+                @forelse ($notices as $notice)
+                    <article class="bg-[#FDFBF7] border border-amber-100 rounded-2xl p-5 sm:p-6 shadow-sm">
+                        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-orange-600">
+                                    {{ optional($notice->upload_dt)->format('d M Y') ?? 'Date not specified' }}
+                                </p>
+                                <h3 class="font-brand font-bold text-xl text-slate-800 mt-1">{{ $notice->title }}</h3>
+                                @if ($notice->description)
+                                    <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ $notice->description }}</p>
+                                @endif
+                            </div>
+
+                            <div class="flex flex-wrap gap-2 shrink-0">
+                                @if ($notice->notice_img_ref)
+                                    <a href="{{ Storage::url($notice->notice_img_ref) }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-bold px-4 py-2 rounded-lg transition">
+                                        View Image
+                                    </a>
+                                @endif
+                                @if ($notice->notice_pdf_ref)
+                                    <a href="{{ Storage::url($notice->notice_pdf_ref) }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-bold px-4 py-2 rounded-lg transition">
+                                        View PDF
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </article>
+                @empty
+                    <div class="rounded-2xl border border-dashed border-amber-200 bg-[#FDFBF7] p-10 text-center text-gray-500">
+                        No notices are available right now.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+
     <!-- Core Features Section -->
     <section id="features" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
