@@ -14,15 +14,24 @@ return new class extends Migration
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('desc')->nullable();
+            $table->string('desccription')->nullable();
 
             $table->string('email')->nullable();
             $table->string('mobile')->nullable();
+            $table->string('dob')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('prof_img_ref')->nullable();
 
             $table->enum('high_qual', ['Secondary', 'Higer Secondary', 'Bachelor', 'Master', 'PhD'])->nullable();
             $table->string('high_qual_subject')->nullable();
+            $table->string('high_qual_certificate_img_ref')->nullable();
+
             $table->enum('prof_qual', ['BEd', 'Med', 'Ph Ed', 'Other'])->nullable();
             $table->string('prof_qual_subject')->nullable();
+            $table->string('prof_qual_certificate_img_ref')->nullable();
+
+
+
 
             $table->string('vill')->nullable();
             $table->string('post_office')->nullable();

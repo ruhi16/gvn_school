@@ -26,7 +26,8 @@ class ShrenySectionComp extends Component
 
     public function toggleAssignment(int $shrenyId, int $sectionId): void
     {
-        if (!$this->canMutate()) return;
+        if (!$this->canMutate())
+            return;
         $mapping = ShrenySection::query()
             ->where('shreny_id', $shrenyId)
             ->where('section_id', $sectionId)
@@ -56,7 +57,8 @@ class ShrenySectionComp extends Component
 
     public function assignAutomatically(): void
     {
-        if (!$this->canMutate()) return;
+        if (!$this->canMutate())
+            return;
         $students = $this->selectedStudents();
 
         if ($students->isEmpty()) {
@@ -74,7 +76,8 @@ class ShrenySectionComp extends Component
 
     public function assignManually(): void
     {
-        if (!$this->canMutate()) return;
+        if (!$this->canMutate())
+            return;
         $students = $this->selectedStudents();
 
         if ($students->isEmpty()) {
@@ -113,7 +116,8 @@ class ShrenySectionComp extends Component
 
     public function updateRollNumber(int $studentId): void
     {
-        if (!$this->canMutate()) return;
+        if (!$this->canMutate())
+            return;
         $student = $this->selectedStudents()->firstWhere('id', $studentId);
         $rollNumber = (int) ($this->rollNumbers[$studentId] ?? 0);
 
@@ -134,7 +138,8 @@ class ShrenySectionComp extends Component
 
     public function removeAssignment(int $studentId): void
     {
-        if (!$this->canMutate()) return;
+        if (!$this->canMutate())
+            return;
         if (!$this->hasSelectedCombination()) {
             return;
         }

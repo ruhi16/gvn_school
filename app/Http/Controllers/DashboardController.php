@@ -40,27 +40,13 @@ class DashboardController extends Controller
     // Teacher Dashboard
     public function teacherDashboard()
     {
-        $teacher = Auth::user()->teacher;
-        $data = [
-            'totalStudents' => 30,
-            'pendingGrades' => 5,
-            'classes' => ['Math 101', 'Science 102'],
-        ];
-
-        return view('dashboard.teacher', compact('data', 'teacher'));
+        return view('dashboard.teacher');
     }
 
     // Student Dashboard
     public function studentDashboard()
     {
-        $student = Auth::user()->student;
-        $data = [
-            'gpa' => 3.8,
-            'subjects' => ['Math', 'Science', 'English'],
-            'attendance' => 95,
-        ];
-
-        return view('dashboard.student', compact('data', 'student'));
+        return view('dashboard.student');
     }
 
     // Admin: Manage Users

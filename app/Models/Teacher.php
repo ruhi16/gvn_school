@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Teacher extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'desc', 'email', 'mobile', 'high_qual', 'high_qual_subject', 'prof_qual', 'prof_qual_subject', 'vill', 'post_office', 'police_station', 'district', 'block', 'pincode', 'order_id', 'school_id', 'session_id', 'is_active', 'remarks'];
+    protected $fillable = ['name', 'desccription', 'email', 'mobile', 'dob', 'gender', 'prof_img_ref', 'high_qual', 'high_qual_subject', 'high_qual_certificate_img_ref', 'prof_qual', 'prof_qual_subject', 'prof_qual_certificate_img_ref', 'vill', 'post_office', 'police_station', 'district', 'block', 'pincode', 'order_id', 'school_id', 'session_id', 'is_active', 'remarks'];
 
     protected $casts = ['is_active' => 'boolean'];
 }

@@ -17,7 +17,10 @@
                     class="inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition {{ $showAssignedOnly ? 'translate-x-6' : 'translate-x-1' }}"></span>
             </button>
         </label>
-        <button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
+        <button type="button" wire:click="toggleMutations" role="switch"
+            aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}"
+            class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{
+            $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button>
     </header>
 
     @if (session('success'))
@@ -53,7 +56,7 @@
                 <label class="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm transition hover:bg-slate-50">
                     <input type="checkbox" wire:click="toggleAssignment({{ $shreny->id }}, {{ $section->id }})"
                         @checked(in_array($section->id, $selectedSections, true))
-                        @disabled(!$mutationsEnabled)
+                    @disabled(!$mutationsEnabled)
                     class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
                     >
                     <span class="flex-1 text-slate-700">{{ $section->name }}</span>
@@ -74,5 +77,5 @@
         @endforelse
     </div>
 
-    
+
 </div>
