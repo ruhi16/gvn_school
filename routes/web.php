@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
         Route::view('/admin/exam-settings/exam-types', 'admin.exam-types')->name('admin.exam-types');
         Route::view('/admin/exam-settings/exam-parts', 'admin.exam-parts')->name('admin.exam-parts');
         Route::view('/admin/exam-settings/exam-modes', 'admin.exam-modes')->name('admin.exam-modes');
+        Route::view('/admin/exam-settings/exam-halves', 'admin.exam-halves')->name('admin.exam-halves');
+        Route::view('/admin/exam-settings/date-schedules', 'admin.exam-date-schedules')->name('admin.exam-date-schedules');
         Route::view('/admin/exam-settings/exam-grades', 'admin.exam-grades')->name('admin.exam-grades');
         Route::view('/admin/exam-settings/details', 'admin.exam-details')->name('admin.exam-details');
         Route::view('/admin/rooms', 'admin.rooms')->name('admin.rooms');

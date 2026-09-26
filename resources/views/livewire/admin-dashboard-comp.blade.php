@@ -8,7 +8,7 @@ $panelTitles = [
 'exam-grades' => 'Exam grades', 'exam-combinations' => 'Exam combination settings', 'exam-marks-settings' => 'Marks
 settings',
 'exam-marks-entry' => 'Marks entry', 'exam-marks-register' => 'Marks register', 'exam-marks-sheets' => 'Marks sheets',
-'exam-script-distribution' => 'Script distribution', 'notices' => 'Notices', 'user-profile' => 'User Profile',
+'exam-script-distribution' => 'Script distribution', 'exam-date-schedules' => 'Exam date schedule', 'notices' => 'Notices', 'user-profile' => 'User Profile',
 ];
 @endphp
 <div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900">
@@ -48,7 +48,7 @@ settings',
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-cyan-400">Exam overview</p>
                 <button wire:click="selectPanel('exam-overview')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Overview</button>
-                @foreach ([['exam-combinations', 'Exam subjects'], ['exam-marks-settings', 'Exam FM / PM'], ['exam-script-distribution', 'Script distribution'], ['exam-marks-entry', 'Marks entry'], ['exam-marks-register', 'Mark register'], ['exam-marks-sheets', 'Mark sheet']] as [$panel, $label])
+                @foreach ([['exam-combinations', 'Exam subjects'], ['exam-marks-settings', 'Exam FM / PM'], ['exam-date-schedules', 'Exam date schedule'], ['exam-script-distribution', 'Script distribution'], ['exam-marks-entry', 'Marks entry'], ['exam-marks-register', 'Mark register'], ['exam-marks-sheets', 'Mark sheet']] as [$panel, $label])
                     <button wire:click="selectPanel('{{ $panel }}')"
                         class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
                 @endforeach
@@ -134,10 +134,17 @@ settings',
                 <livewire:exam-mode-comp />
                 @elseif($activePanel === 'exam-grades')
                 <livewire:exam-grade-comp />
-                @elseif($activePanel === 'exam-combinations' || $activePanel === 'exam-overview')
+                @elseif($activePanel === 'exam-overview')
+                <div class="space-y-6">
+                    <livewire:exam-settings />
+                    <livewire:exam-half-comp />
+                </div>
+                @elseif($activePanel === 'exam-combinations')
                 <livewire:exam-settings />
                 @elseif($activePanel === 'exam-marks-settings')
                 <livewire:exam-marks-settings />
+                @elseif($activePanel === 'exam-date-schedules')
+                <livewire:exam-date-schedule-comp />
                 @elseif($activePanel === 'exam-marks-entry')
                 <livewire:exam-marks-entry-comp />
                 @elseif($activePanel === 'exam-marks-register')

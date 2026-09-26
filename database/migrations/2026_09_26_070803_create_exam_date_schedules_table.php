@@ -11,20 +11,35 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('exam_date_schedules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
+            
+            $table->integer('exam_name_id')->nullable();
+            $table->integer('exam_type_id')->nullable();
+            $table->integer('exam_part_id')->nullable();
+            $table->integer('exam_mode_id')->nullable();    
+
+            $table->integer('shreny_id')->nullable();
+            $table->integer('section_id')->nullable();
+
+            $table->integer('subject_id')->nullable();
+
+
+            $table->date('exam_date')->nullable();
+            $table->integer('exam_half_id')->nullable();
+            
+
+            
             $table->integer('order_id')->nullable();
             $table->integer('school_id')->nullable();
-            $table->integer('session_id')->nullable()->default(null);
-
+            $table->integer('session_id')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('remarks')->nullable();
+            $table->string('remarks')->nullable(); 
             $table->boolean('is_editable')->default(false);
             $table->boolean('is_deleted')->default(false);
             $table->boolean('is_finalized')->default(false);
-            // $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -34,6 +49,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists('exam_date_schedules');
     }
 };

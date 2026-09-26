@@ -49,6 +49,12 @@ $schoolActive = request()->routeIs('admin.school*', 'admin.rooms', 'admin.studen
             <a href="{{ route('admin.exam-modes') }}"
                 class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-modes') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam
                 Mode</a>
+            <a href="{{ route('admin.exam-halves') }}"
+                class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-halves') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam
+                Halves</a>
+            <a href="{{ route('admin.exam-date-schedules') }}"
+                class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-date-schedules') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam
+                date schedule</a>
             <a href="{{ route('admin.exam-grades') }}"
                 class="block rounded px-2 py-1.5 {{ request()->routeIs('admin.exam-grades') ? 'bg-cyan-950 text-cyan-300 font-semibold' : 'hover:text-white' }}">Exam
                 Grade</a>

@@ -59,8 +59,33 @@ class StudentCrComp extends Component
         }
 
         DB::transaction(function () use ($students): void {
-            foreach ($students->values() as $index => $student) {
-                $this->saveStudentCr($student, $index + 1);
+            $studentIds = $students->modelKeys();
+            $existingRolls = StudentCr::query()
+                ->where('session_id', $this->currentSessionId)
+                ->where('curr_shreny_id', $this->selectedShrenyId)
+                ->where('curr_section_id', $this->selectedSectionId)
+                ->whereIn('studentdb_id', $studentIds)
+                ->pluck('curr_roll_no', 'studentdb_id');
+            $usedRolls = StudentCr::query()
+                ->where('curr_shreny_id', $this->selectedShrenyId)
+                ->where('curr_section_id', $this->selectedSectionId)
+                ->whereNotNull('curr_roll_no')
+                ->pluck('curr_roll_no')
+                ->map(fn ($roll) => (int) $roll)
+                ->all();
+            $nextRoll = 1;
+
+            foreach ($students as $student) {
+                $rollNumber = (int) ($existingRolls[$student->id] ?? 0);
+                if ($rollNumber < 1) {
+                    while (in_array($nextRoll, $usedRolls, true)) {
+                        $nextRoll++;
+                    }
+                    $rollNumber = $nextRoll++;
+                    $usedRolls[] = $rollNumber;
+                }
+
+                $this->saveStudentCr($student, $rollNumber);
             }
         });
         $this->loadRollNumbers();

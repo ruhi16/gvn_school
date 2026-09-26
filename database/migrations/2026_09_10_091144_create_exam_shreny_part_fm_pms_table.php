@@ -32,6 +32,9 @@ return new class extends Migration
             $table->integer('session_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable(); 
+            $table->boolean('is_editable')->default(false);
+            $table->boolean('is_deleted')->default(false);
+            $table->boolean('is_finalized')->default(false);
             $table->timestamps();
         });
     }

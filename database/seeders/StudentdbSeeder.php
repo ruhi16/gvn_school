@@ -14,6 +14,19 @@ class StudentdbSeeder extends Seeder
      */
     public function run(): void
     {
+        $schoolId = DB::table('schools')->value('id');
+        $sessionId = DB::table('sessions')->where('school_id', $schoolId)->value('id');
+        $shrenyIds = DB::table('shrenies')
+            ->where('school_id', $schoolId)
+            ->where('session_id', $sessionId)
+            ->orderBy('order_id')
+            ->pluck('id')
+            ->values();
+
+        if (!$schoolId || !$sessionId || $shrenyIds->isEmpty()) {
+            throw new \RuntimeException('Seed the school, session, and Shrenies before seeding students.');
+        }
+
         $genders = ['Male', 'Female', 'Other'];
         
         $villages = ['Jiaganj', 'Azimganj', 'Lalgola', 'Murshidabad', 'Raghunathganj'];
@@ -38,7 +51,18 @@ class StudentdbSeeder extends Seeder
                 $mname = "Mother Name " . $i;
             }
 
-            DB::table('student_dbs')->insert([
+            $shrenyId = $shrenyIds[($i - 1) % $shrenyIds->count()];
+            $sectionId = DB::table('shreny_sections')
+                ->where('shreny_id', $shrenyId)
+                ->where('school_id', $schoolId)
+                ->where('session_id', $sessionId)
+                ->value('section_id');
+
+            if (!$sectionId) {
+                throw new \RuntimeException("No section is mapped to Shreny {$shrenyId}.");
+            }
+
+            DB::table('student_dbs')->updateOrInsert(['email' => "student{$i}@example.com"], [
                 'name' => $name,
                 'dp_img_ref' => 'student-dbs/1/dp/' . $i . '.jpg',
                 'gender' => $gender,
@@ -64,16 +88,16 @@ class StudentdbSeeder extends Seeder
                 // Contact
                 'mobile_1' => '9876' . rand(10000, 99999),
                 'mobile_2' => '8765' . rand(10000, 99999),
-                'email' => 'student' . $i . '@example.com',
+                'email' => "student{$i}@example.com",
 
                 // Class relational mappings (integers)
-                'adm_shreny_id' => rand(1, 7),
-                'adm_section_id' => rand(1, 2),
+                'adm_shreny_id' => $shrenyId,
+                'adm_section_id' => $sectionId,
 
                 // System tags
                 'order_id' => $i,
-                'school_id' => 1, //rand(1, 5),
-                'session_id' => 1, //rand(2024, 2026),
+                'school_id' => $schoolId,
+                'session_id' => $sessionId,
                 'is_active' => (rand(1, 10) > 1), // 90% chance to be active
                 'remarks' => rand(1, 5) == 5 ? 'Needs review' : null,
                 'created_at' => Carbon::now(),

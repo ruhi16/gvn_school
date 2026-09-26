@@ -13,6 +13,9 @@ class ExamGradeSeeder extends Seeder
      */
     public function run(): void
     {
+        $schoolId = DB::table('schools')->value('id');
+        $sessionId = DB::table('sessions')->where('school_id', $schoolId)->value('id');
+
         $grades = [
             [
                 'name' => 'A+',
@@ -66,14 +69,18 @@ class ExamGradeSeeder extends Seeder
         ];
 
         foreach ($grades as $index => $grade) {
-            DB::table('exam_grades')->insert([
+            DB::table('exam_grades')->updateOrInsert([
+                'name' => $grade['name'],
+                'school_id' => $schoolId,
+                'session_id' => $sessionId,
+            ], [
                 'name' => $grade['name'],
                 'description' => $grade['description'],
                 'from_percentage' => $grade['from_percentage'],
                 'to_percentage' => $grade['to_percentage'],
-                'order_id' => $index + 1, // Automatically orders them 1 to 7
-                'school_id' => 1,         // Replace with your dynamic or default school ID
-                'session_id' => 1,        // Replace with your dynamic or default session ID
+                'order_id' => $index + 1,
+                'school_id' => $schoolId,
+                'session_id' => $sessionId,
                 'is_active' => true,
                 'remarks' => $grade['remarks'],
                 'created_at' => now(),

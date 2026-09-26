@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('exam_result_promotions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->boolean('is_editable')->default(false);
+            $table->boolean('is_deleted')->default(false);
+            $table->boolean('is_finalized')->default(false);
         });
     }
 

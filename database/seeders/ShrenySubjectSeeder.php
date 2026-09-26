@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Shreny;
 use App\Models\ShrenySubject;
+use App\Models\School;
+use App\Models\Session;
+use App\Models\Subject;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,27 +18,49 @@ class ShrenySubjectSeeder extends Seeder
     public function run(): void
     {
         $shrenySubjectsMap = [
-            1 => [1,2,3,10,11],  // Shreny ID 1 gets Subject IDs 10, 12, 15
-            2 => [1,2,3,10,11],      // Shreny ID 2 gets Subject IDs 11, 14
-            3 => [1,2,3,10,11],  // Shreny ID 3 gets Subject IDs 10, 13, 16
-            4 => [1,2,3,4,9,10,11],  // Shreny ID 4 gets Subject IDs 12, 15
-            5 => [1,2,3,4,9,10,11],  // Shreny ID 5 gets Subject IDs 11, 14
-            6 => [1,2,3,4,6,7,8,9,10,11],  // Shreny ID 6 gets Subject IDs 10, 13, 16
-            7 => [1,2,3,4,6,7,8,9,10,11],  // Shreny ID 7 gets Subject IDs 12, 15
+            'Baby Land' => ['Bengali', 'English', 'Mathematics', 'Physical Education', 'Art & Work Education'],
+            'LKG' => ['Bengali', 'English', 'Mathematics', 'Physical Education', 'Art & Work Education'],
+            'UKG' => ['Bengali', 'English', 'Mathematics', 'Physical Education', 'Art & Work Education'],
+            'Class 1' => ['Bengali', 'English', 'Mathematics', 'General Knowledge', 'Computer Science', 'Physical Education', 'Art & Work Education'],
+            'Class 2' => ['Bengali', 'English', 'Mathematics', 'General Knowledge', 'Computer Science', 'Physical Education', 'Art & Work Education'],
+            'Class 3' => ['Bengali', 'English', 'Mathematics', 'General Knowledge', 'Environmental Science', 'History & Civics', 'Geography & Culture', 'Computer Science', 'Physical Education', 'Art & Work Education'],
+            'Class 4' => ['Bengali', 'English', 'Mathematics', 'General Knowledge', 'Environmental Science', 'History & Civics', 'Geography & Culture', 'Computer Science', 'Physical Education', 'Art & Work Education'],
         ];
 
+        $schoolId = School::query()->where('name', 'Green Vally Nursery School')->value('id');
+        $sessionId = Session::query()->where('school_id', $schoolId)->where('name', '2026')->value('id');
 
+        foreach ($shrenySubjectsMap as $shrenyName => $subjectNames) {
+            $shreny = Shreny::query()
+                ->where('name', $shrenyName)
+                ->where('school_id', $schoolId)
+                ->where('session_id', $sessionId)
+                ->first();
 
-        foreach ($shrenySubjectsMap as $shrenyId => $subjectIds) {
-            foreach ($subjectIds as $subjectId) {
-                ShrenySubject::create([
-                    'shreny_id' => Shreny::find($shrenyId)->id,
+            if (!$shreny) {
+                throw new \RuntimeException("Shreny {$shrenyName} must be seeded before its subjects.");
+            }
+
+            foreach ($subjectNames as $index => $subjectName) {
+                $subjectId = Subject::query()
+                    ->where('name', $subjectName)
+                    ->where('school_id', $schoolId)
+                    ->where('session_id', $sessionId)
+                    ->value('id');
+
+                if (!$subjectId) {
+                    throw new \RuntimeException("Subject {$subjectName} must be seeded before Shreny subjects.");
+                }
+
+                ShrenySubject::query()->updateOrCreate([
+                    'shreny_id' => $shreny->id,
                     'subject_id' => $subjectId,
-                    'school_id' => 1,
-                    'session_id' => 1,
-                    'order_id' => 1,
+                    'school_id' => $schoolId,
+                    'session_id' => $sessionId,
+                ], [
+                    'order_id' => $index + 1,
                     'is_active' => true,
-                    ]);
+                ]);
             }
         }
     }

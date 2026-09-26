@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('student_cr_id')->nullable();
             $table->integer('obtained_marks')->nullable();
 
-            $table->boolean('is_finalized')->default(false);
+            
             $table->boolean('is_issued')->default(false);
 
             $table->integer('order_id')->nullable();
@@ -35,6 +35,9 @@ return new class extends Migration
             $table->integer('session_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
+            $table->boolean('is_editable')->default(false);
+            $table->boolean('is_deleted')->default(false);
+            $table->boolean('is_finalized')->default(false);
             $table->timestamps();
         });
     }
