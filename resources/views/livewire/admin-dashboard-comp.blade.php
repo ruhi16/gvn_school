@@ -1,7 +1,7 @@
 @php
 $panelTitles = [
 'overview' => 'Overview', 'students' => 'Student admissions', 'student-crs' => 'Shreny & Section students',
-'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies', 'section' => 'Sections',
+'school-management' => 'School Management', 'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies', 'section' => 'Sections',
 'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
 'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
 'exam-names' => 'Exam names', 'exam-types' => 'Exam types', 'exam-parts' => 'Exam parts', 'exam-modes' => 'Exam modes',
@@ -34,8 +34,8 @@ settings',
                 @endforeach
 
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">School</p>
-                <button wire:click="selectPanel('overview')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Overview</button>
+                <button wire:click="selectPanel('school-management')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'school-management' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">School management</button>
                 <button wire:click="selectPanel('notices')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'notices' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Notices</button>
 
@@ -52,6 +52,8 @@ settings',
                     <button wire:click="selectPanel('{{ $panel }}')"
                         class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
                 @endforeach
+                <a href="{{ route('admin.exam-rooms') }}"
+                    class="block rounded px-3 py-2 {{ request()->routeIs('admin.exam-rooms*') ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam room allotment</a>
 
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">System settings</p>
                 <button wire:click="selectPanel('user-profile')"
@@ -81,30 +83,19 @@ settings',
                     <div class="grid gap-4 lg:grid-cols-2">
                         <div class="rounded-lg border border-slate-200 bg-white p-4">
                             <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">General settings</p>
-                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-600">
-                                <span>Schools and sessions</span>
-                                <span>Shrenies and sections</span>
-                                <span>Subjects and teachers</span>
-                                <span>Combinations</span>
-                            </div>
+                            <p class="text-xs text-slate-600">Manage school setup, academic structure, staffing, and rooms from School management.</p>
                         </div>
                         <div class="rounded-lg border border-slate-200 bg-white p-4">
                             <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Exam settings</p>
                             <p class="text-xs text-slate-600">Basic definitions, exam structure, marks, modes, grades, and Shreny-subject combinations.</p>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <livewire:school-comp />
-                        <livewire:session-comp />
-                        <livewire:shreny-comp />
-                        <livewire:section-comp />
-                        <livewire:subject-comp />
-                        <livewire:teacher-comp />
-                    </div>
                 @elseif($activePanel === 'students')
                 <livewire:student-db-comp />
                 @elseif($activePanel === 'student-crs')
                 <livewire:student-cr-comp />
+                @elseif($activePanel === 'school-management')
+                <livewire:school-management-comp />
                 @elseif($activePanel === 'school')
                 <livewire:school-comp />
                 @elseif($activePanel === 'session')
