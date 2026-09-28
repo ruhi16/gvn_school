@@ -34,23 +34,49 @@
         </div>
         @error('rollNumbers')<p class="text-xs text-rose-600">{{ $message }}</p>@enderror
         <div class="overflow-x-auto rounded border border-slate-200">
-            <table class="w-full min-w-[760px] text-left text-xs">
+            <table class="w-full min-w-[1100px] text-left text-xs">
                 <thead class="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
-                    <tr><th class="px-3 py-2">Student</th><th class="px-3 py-2">Father / guardian</th><th class="px-3 py-2">Admission ID</th><th class="px-3 py-2">Current roll no.</th><th class="px-3 py-2">Action</th></tr>
+                    <tr><th class="px-3 py-2">Student</th><th class="px-3 py-2">Father / guardian</th><th class="px-3 py-2">Admission ID</th><th class="px-3 py-2">Current roll no.</th><th class="px-3 py-2">Promoted</th><th class="px-3 py-2">Active</th><th class="px-3 py-2">Remarks</th><th class="px-3 py-2">Action</th></tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($students as $student)
+                        @php($classRecord = $classRecords->get($student->id))
                         <tr>
-                            <td class="px-3 py-2 font-semibold text-slate-900">{{ $student->name }}</td>
+                            <td class="px-3 py-2 font-semibold text-slate-900">
+                                {{ $student->name }}
+                                <p class="mt-0.5 text-[10px] font-normal text-slate-500">{{ $student->dob?->format('d M Y') ?: 'DOB not set' }} · {{ $student->gender ?: 'Gender not set' }}</p>
+                                <details class="mt-1 font-normal">
+                                    <summary class="cursor-pointer text-[10px] text-cyan-700">Class record details</summary>
+                                    @if ($classRecord)
+                                        <dl class="mt-2 grid gap-x-3 gap-y-1 sm:grid-cols-2">
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Record ID</dt><dd>{{ $classRecord->id }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">StudentDB ID</dt><dd>{{ $classRecord->studentdb_id }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Shreny ID</dt><dd>{{ $classRecord->curr_shreny_id }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Section ID</dt><dd>{{ $classRecord->curr_section_id }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Roll number</dt><dd>{{ $classRecord->curr_roll_no ?? '—' }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">School / session</dt><dd>{{ $classRecord->school_id }} / {{ $classRecord->session_id }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Order</dt><dd>{{ $classRecord->order_id ?? '—' }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Editable / deleted / finalized</dt><dd>{{ $classRecord->is_editable ? 'Yes' : 'No' }} / {{ $classRecord->is_deleted ? 'Yes' : 'No' }} / {{ $classRecord->is_finalized ? 'Yes' : 'No' }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Created</dt><dd>{{ $classRecord->created_at?->toDateTimeString() ?? '—' }}</dd></div>
+                                            <div><dt class="text-[10px] font-semibold text-slate-500">Updated</dt><dd>{{ $classRecord->updated_at?->toDateTimeString() ?? '—' }}</dd></div>
+                                        </dl>
+                                    @else
+                                        <p class="mt-1 text-[10px] text-slate-500">No StudentCR record has been saved for this student in this session.</p>
+                                    @endif
+                                </details>
+                            </td>
                             <td class="px-3 py-2 text-slate-600">{{ $student->fname ?: '-' }}</td>
                             <td class="px-3 py-2 text-slate-500">#{{ $student->id }}</td>
                             <td class="px-3 py-2"><input wire:model="rollNumbers.{{ $student->id }}" @disabled(!$mutationsEnabled) type="number" min="1" class="w-24 rounded border-slate-300 px-2 py-1.5 text-xs" placeholder="Unassigned">
                                 @error("rollNumbers.{$student->id}")<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                             </td>
-                            <td class="px-3 py-2"><button type="button" wire:click="updateRollNumber({{ $student->id }})" @disabled(!$mutationsEnabled) class="font-semibold text-cyan-700 hover:text-cyan-600">{{ isset($assignedRolls[$student->id]) ? 'Update' : 'Assign' }}</button></td>
+                            <td class="px-3 py-2"><label class="inline-flex items-center gap-1.5"><input wire:model="promotedByStudent.{{ $student->id }}" @disabled(!$mutationsEnabled) type="checkbox" class="rounded border-slate-300 text-cyan-700"><span class="text-[10px]">Yes</span></label></td>
+                            <td class="px-3 py-2"><label class="inline-flex items-center gap-1.5"><input wire:model="activeByStudent.{{ $student->id }}" @disabled(!$mutationsEnabled) type="checkbox" class="rounded border-slate-300 text-cyan-700"><span class="text-[10px]">Yes</span></label></td>
+                            <td class="px-3 py-2"><input wire:model="remarksByStudent.{{ $student->id }}" @disabled(!$mutationsEnabled) type="text" maxlength="255" class="w-40 rounded border-slate-300 px-2 py-1.5 text-xs" placeholder="Optional"></td>
+                            <td class="px-3 py-2"><button type="button" wire:click="updateRollNumber({{ $student->id }})" @disabled(!$mutationsEnabled) class="font-semibold text-cyan-700 hover:text-cyan-600">{{ $classRecord ? 'Update' : 'Assign' }}</button></td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-3 py-8 text-center text-sm text-slate-500">No newly admitted students match this Shreny and Section.</td></tr>
+                        <tr><td colspan="8" class="px-3 py-8 text-center text-sm text-slate-500">No newly admitted students match this Shreny and Section.</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -16,6 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
 
+            $table->integer('exam_name_id')->nullable();
+            $table->integer('exam_type_id')->nullable();
+            $table->integer('exam_part_id')->nullable();
+
+            $table->integer('shreny_id')->nullable();
+            $table->integer('allowable_no_of_failed_subjects')->nullable();
+
             $table->integer('order_id')->nullable();
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable();

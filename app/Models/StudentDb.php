@@ -39,11 +39,17 @@ class StudentDb extends Model
         'session_id',
         'is_active',
         'remarks',
+        'is_editable',
+        'is_deleted',
+        'is_finalized',
     ];
 
     protected $casts = [
         'dob' => 'date',
         'is_active' => 'boolean',
+        'is_editable' => 'boolean',
+        'is_deleted' => 'boolean',
+        'is_finalized' => 'boolean',
     ];
 
     public function classRecords(): HasMany

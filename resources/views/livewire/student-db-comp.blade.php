@@ -44,13 +44,66 @@
                             <div
                                 class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded bg-slate-100 text-[10px] font-bold text-slate-400">
                                 @if($student->dp_img_ref)<img
-                                    src="{{ Storage::disk('public')->url($student->dp_img_ref) }}"
+                                    src="{{ asset('storage/' . ltrim($student->dp_img_ref, '/')) }}"
                                     class="h-full w-full object-cover" alt="">@else{{ strtoupper(substr($student->name,
                                 0, 1)) }}@endif</div>
                             <div>
                                 <div class="font-semibold text-slate-900">{{ $student->name }}</div>
                                 <div class="text-[10px] text-slate-500">#{{ $student->id }} · {{ $student->district ?:
                                     'District not set' }}</div>
+                                <details class="mt-2 max-w-[700px]">
+                                    <summary class="cursor-pointer text-[10px] font-semibold text-cyan-700">Full admission record</summary>
+                                    @php
+                                        $studentFields = [
+                                            'Mother' => $student->mname,
+                                            'APAAR ID' => $student->apper_id,
+                                            'Village' => $student->village,
+                                            'Post office' => $student->post_office,
+                                            'Police station' => $student->police_station,
+                                            'Block' => $student->block,
+                                            'Pincode' => $student->pincode,
+                                            'State' => $student->state,
+                                            'Nationality' => $student->nationality,
+                                            'Mobile 2' => $student->mobile_2,
+                                            'Admission Shreny ID' => $student->adm_shreny_id,
+                                            'Admission Section ID' => $student->adm_section_id,
+                                            'Order' => $student->order_id,
+                                            'School ID' => $student->school_id,
+                                            'Session ID' => $student->session_id,
+                                            'Editable' => $student->is_editable ? 'Yes' : 'No',
+                                            'Deleted' => $student->is_deleted ? 'Yes' : 'No',
+                                            'Finalized' => $student->is_finalized ? 'Yes' : 'No',
+                                            'Remarks' => $student->remarks,
+                                            'Created' => $student->created_at?->toDateTimeString(),
+                                            'Updated' => $student->updated_at?->toDateTimeString(),
+                                        ];
+                                        $studentImages = [
+                                            'Profile photo' => $student->dp_img_ref,
+                                            'DOB certificate' => $student->dob_cert_img_ref,
+                                            'Aadhaar image' => $student->aadhaar_img_ref,
+                                        ];
+                                    @endphp
+                                    <dl class="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+                                        @foreach ($studentFields as $field => $value)
+                                            <div class="min-w-0 text-[10px]">
+                                                <dt class="font-semibold text-slate-500">{{ $field }}</dt>
+                                                <dd class="break-words text-slate-700">{{ $value ?: '—' }}</dd>
+                                            </div>
+                                        @endforeach
+                                        @foreach ($studentImages as $field => $path)
+                                            <div class="min-w-0 text-[10px]">
+                                                <dt class="font-semibold text-slate-500">{{ $field }}</dt>
+                                                <dd class="break-all">
+                                                    @if ($path)
+                                                        <a href="{{ asset('storage/' . ltrim($path, '/')) }}" target="_blank" class="text-cyan-700">{{ $path }}</a>
+                                                    @else
+                                                        <span class="text-slate-700">—</span>
+                                                    @endif
+                                                </dd>
+                                            </div>
+                                        @endforeach
+                                    </dl>
+                                </details>
                             </div>
                         </div>
                     </td>

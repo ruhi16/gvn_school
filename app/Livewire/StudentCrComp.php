@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\Section;
-use App\Models\Session;
 use App\Models\Shreny;
 use App\Models\ShrenySection;
 use App\Models\StudentCr;
@@ -22,16 +21,16 @@ class StudentCrComp extends Component
     public ?int $selectedShrenyId = null;
     public ?int $selectedSectionId = null;
     public array $rollNumbers = [];
+    public array $promotedByStudent = [];
+    public array $activeByStudent = [];
+    public array $remarksByStudent = [];
     public ?int $currentSessionId = null;
 
     protected $queryString = ['search'];
 
     public function mount(): void
     {
-        $this->currentSessionId = Session::query()->where('is_active', true)
-            ->where(function ($query) {
-                $query->whereRaw('LOWER(status) = ?', ['active'])->orWhereNull('status');
-            })->orderByDesc('id')->value('id');
+        $this->currentSessionId = $this->activeSession()?->id;
     }
 
     public function updatedSearch(): void { $this->resetPage(); }
@@ -40,6 +39,9 @@ class StudentCrComp extends Component
     {
         $this->selectedSectionId = null;
         $this->rollNumbers = [];
+        $this->promotedByStudent = [];
+        $this->activeByStudent = [];
+        $this->remarksByStudent = [];
         $this->resetPage();
     }
 
@@ -61,14 +63,19 @@ class StudentCrComp extends Component
         DB::transaction(function () use ($students): void {
             $studentIds = $students->modelKeys();
             $existingRolls = StudentCr::query()
+                ->where('school_id', $this->activeSchoolId())
                 ->where('session_id', $this->currentSessionId)
                 ->where('curr_shreny_id', $this->selectedShrenyId)
                 ->where('curr_section_id', $this->selectedSectionId)
+                ->where('is_deleted', false)
                 ->whereIn('studentdb_id', $studentIds)
                 ->pluck('curr_roll_no', 'studentdb_id');
             $usedRolls = StudentCr::query()
+                ->where('school_id', $this->activeSchoolId())
+                ->where('session_id', $this->currentSessionId)
                 ->where('curr_shreny_id', $this->selectedShrenyId)
                 ->where('curr_section_id', $this->selectedSectionId)
+                ->where('is_deleted', false)
                 ->whereNotNull('curr_roll_no')
                 ->pluck('curr_roll_no')
                 ->map(fn ($roll) => (int) $roll)
@@ -85,7 +92,7 @@ class StudentCrComp extends Component
                     $usedRolls[] = $rollNumber;
                 }
 
-                $this->saveStudentCr($student, $rollNumber);
+                $this->saveStudentCr($student, $rollNumber, $student->id);
             }
         });
         $this->loadRollNumbers();
@@ -119,7 +126,7 @@ class StudentCrComp extends Component
 
         DB::transaction(function () use ($students, $rolls): void {
             foreach ($students as $student) {
-                $this->saveStudentCr($student, $rolls[$student->id]);
+                $this->saveStudentCr($student, $rolls[$student->id], $student->id);
             }
         });
         $this->resetErrorBag();
@@ -139,7 +146,7 @@ class StudentCrComp extends Component
             $this->addError("rollNumbers.{$studentId}", 'This roll number is already assigned in this Shreny and Section.');
             return;
         }
-        $this->saveStudentCr($student, $rollNumber);
+        $this->saveStudentCr($student, $rollNumber, $student->id);
         $this->resetErrorBag("rollNumbers.{$studentId}");
         session()->flash('success', "Roll number updated for {$student->name}.");
     }
@@ -150,7 +157,8 @@ class StudentCrComp extends Component
             return collect();
         }
 
-        return StudentDb::query()->where('session_id', $this->currentSessionId)
+        return StudentDb::query()->where('school_id', $this->activeSchoolId())
+            ->where('session_id', $this->currentSessionId)->where('is_deleted', false)
             ->where('adm_shreny_id', $this->selectedShrenyId)
             ->where('adm_section_id', $this->selectedSectionId)->where('is_active', true)
             ->when($this->search, fn ($query) => $query->where(function ($query) {
@@ -163,33 +171,47 @@ class StudentCrComp extends Component
 
     private function loadRollNumbers(): void
     {
-        $this->rollNumbers = $this->currentSessionId && $this->selectedShrenyId && $this->selectedSectionId
-            ? StudentCr::query()->where('session_id', $this->currentSessionId)
+        $records = $this->currentSessionId && $this->selectedShrenyId && $this->selectedSectionId
+            ? StudentCr::query()->where('school_id', $this->activeSchoolId())
+                ->where('session_id', $this->currentSessionId)->where('is_deleted', false)
                 ->where('curr_shreny_id', $this->selectedShrenyId)->where('curr_section_id', $this->selectedSectionId)
-                ->pluck('curr_roll_no', 'studentdb_id')->map(fn ($roll) => (string) $roll)->all() : [];
+                ->get()->keyBy('studentdb_id') : collect();
+        $this->rollNumbers = $records->mapWithKeys(fn ($record, $studentId) => [
+            $studentId => $record->curr_roll_no === null ? '' : (string) $record->curr_roll_no,
+        ])->all();
+        $this->promotedByStudent = $records->mapWithKeys(fn ($record, $studentId) => [$studentId => (bool) $record->is_promoted])->all();
+        $this->activeByStudent = $records->mapWithKeys(fn ($record, $studentId) => [$studentId => (bool) $record->is_active])->all();
+        $this->remarksByStudent = $records->mapWithKeys(fn ($record, $studentId) => [$studentId => $record->remarks ?? ''])->all();
     }
 
-    private function saveStudentCr(StudentDb $student, int $rollNumber): void
+    private function saveStudentCr(StudentDb $student, int $rollNumber, int $studentId): void
     {
         StudentCr::updateOrCreate(
             ['studentdb_id' => $student->id, 'session_id' => $this->currentSessionId],
             ['curr_shreny_id' => $this->selectedShrenyId, 'curr_section_id' => $this->selectedSectionId,
                 'curr_roll_no' => $rollNumber, 'school_id' => $student->school_id, 'order_id' => $student->order_id,
-                'is_promoted' => true, 'is_active' => true]
+                'is_promoted' => $this->promotedByStudent[$studentId] ?? true,
+                'is_active' => $this->activeByStudent[$studentId] ?? true,
+                'is_deleted' => false,
+                'remarks' => $this->remarksByStudent[$studentId] ?? null]
         );
     }
 
     private function rollNumberIsAvailable(int $rollNumber, int $studentId): bool
     {
-        return !StudentCr::query()->where('session_id', $this->currentSessionId)
+        return !StudentCr::query()->where('school_id', $this->activeSchoolId())
+            ->where('session_id', $this->currentSessionId)->where('is_deleted', false)
             ->where('curr_shreny_id', $this->selectedShrenyId)->where('curr_section_id', $this->selectedSectionId)
             ->where('curr_roll_no', $rollNumber)->where('studentdb_id', '!=', $studentId)->exists();
     }
 
     public function render()
     {
-        $shrenies = Shreny::query()->where('is_active', true)->orderBy('order_id')->orderBy('name')->get();
+        $shrenies = Shreny::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)
+            ->where(fn ($query) => $query->whereNull('session_id')->orWhere('session_id', $this->currentSessionId))
+            ->orderBy('order_id')->orderBy('name')->get();
         $sectionIds = ShrenySection::query()->where('shreny_id', $this->selectedShrenyId)
+            ->where('school_id', $this->activeSchoolId())
             ->where(function ($query) {
                 $query->where('session_id', $this->currentSessionId)->orWhereNull('session_id');
             })->where('is_active', true)->pluck('section_id');
@@ -197,7 +219,24 @@ class StudentCrComp extends Component
             ->orderBy('order_id')->orderBy('name')->get();
         $students = $this->selectedStudents();
         $assignedRolls = $this->rollNumbers;
+        $classRecords = $this->selectedShrenyId && $this->selectedSectionId
+            ? StudentCr::query()->where('school_id', $this->activeSchoolId())
+                ->where('session_id', $this->currentSessionId)
+                ->where('curr_shreny_id', $this->selectedShrenyId)
+                ->where('curr_section_id', $this->selectedSectionId)
+                ->where('is_deleted', false)
+                ->whereIn('studentdb_id', $students->modelKeys())
+                ->get()->keyBy('studentdb_id')
+            : collect();
+        foreach ($students as $student) {
+            $record = $classRecords->get($student->id);
+            $this->rollNumbers[$student->id] ??= $record?->curr_roll_no ? (string) $record->curr_roll_no : '';
+            $this->promotedByStudent[$student->id] ??= $record?->is_promoted ?? true;
+            $this->activeByStudent[$student->id] ??= $record?->is_active ?? true;
+            $this->remarksByStudent[$student->id] ??= $record?->remarks ?? '';
+        }
+        $assignedRolls = $this->rollNumbers;
 
-        return view('livewire.student-cr-comp', compact('shrenies', 'sections', 'students', 'assignedRolls'));
+        return view('livewire.student-cr-comp', compact('shrenies', 'sections', 'students', 'assignedRolls', 'classRecords'));
     }
 }

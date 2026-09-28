@@ -11,28 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exam_shreny_subject_grades', function (Blueprint $table) {
+        Schema::create('photo_galleries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
+            $table->integer('category_id')->nullable();
 
-            $table->integer('exam_name_id')->nullable();
-            $table->integer('exam_type_id')->nullable();
-            $table->integer('exam_part_id')->nullable();
-            
-            $table->integer('shreny_id')->nullable();
-            $table->integer('subject_type_id')->nullable();
-            $table->integer('exam_grade_id')->nullable();
+            $table->string('category_name')->nullable();
+            $table->string('category_slug')->nullable();
+            $table->string('category_description')->nullable();
 
+            $table->string('image_path')->nullable();
+            $table->string('image_caption')->nullable();
+            $table->string('image_alt_text')->nullable();
+
+            $table->boolean('is_featured')->default(false);
 
             $table->integer('order_id')->nullable();
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('remarks')->nullable();   
+            $table->string('remarks')->nullable(); 
             $table->boolean('is_editable')->default(false);
             $table->boolean('is_deleted')->default(false);
-            $table->boolean('is_finalized')->default(false);         
+            $table->boolean('is_finalized')->default(false);
             $table->timestamps();
         });
     }
@@ -42,6 +44,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exam_shreny_subject_grades');
+        Schema::dropIfExists('photo_galleries');
     }
 };

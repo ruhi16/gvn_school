@@ -23,9 +23,12 @@ it('creates, finalizes, reopens, and deletes an exam date schedule', function ()
     $examName = ExamName::query()->create(['name' => 'Term One', 'school_id' => $school->id, 'is_active' => true]);
     $examType = ExamType::query()->create(['name' => 'Written', 'school_id' => $school->id, 'is_active' => true]);
     $examPart = ExamPart::query()->create(['name' => 'Part One', 'school_id' => $school->id, 'is_active' => true]);
+    $examTypeTwo = ExamType::query()->create(['name' => 'Oral', 'school_id' => $school->id, 'is_active' => true]);
+    $examPartTwo = ExamPart::query()->create(['name' => 'Part Two', 'school_id' => $school->id, 'is_active' => true]);
     $examMode = ExamMode::query()->create(['name' => 'Written', 'school_id' => $school->id, 'is_active' => true]);
     $shreny = Shreny::query()->create(['name' => 'Class One', 'school_id' => $school->id, 'session_id' => $session->id, 'is_active' => true]);
     $section = Section::query()->create(['name' => 'A', 'school_id' => $school->id, 'session_id' => $session->id, 'is_active' => true]);
+    $sectionB = Section::query()->create(['name' => 'B', 'school_id' => $school->id, 'session_id' => $session->id, 'is_active' => true]);
     $subject = Subject::query()->create(['name' => 'Mathematics', 'short_name' => 'MATH', 'school_id' => $school->id, 'session_id' => $session->id, 'is_active' => true]);
 
     ShrenySection::query()->create([
@@ -35,11 +38,27 @@ it('creates, finalizes, reopens, and deletes an exam date schedule', function ()
         'session_id' => $session->id,
         'is_active' => true,
     ]);
+    ShrenySection::query()->create([
+        'shreny_id' => $shreny->id,
+        'section_id' => $sectionB->id,
+        'school_id' => $school->id,
+        'session_id' => $session->id,
+        'is_active' => true,
+    ]);
     ExamShrenyPartFmPm::query()->create([
         'name' => 'Configured combination',
         'exam_name_id' => $examName->id,
         'exam_type_id' => $examType->id,
         'exam_part_id' => $examPart->id,
+        'school_id' => $school->id,
+        'session_id' => $session->id,
+        'is_active' => true,
+    ]);
+    ExamShrenyPartFmPm::query()->create([
+        'name' => 'Second configured combination',
+        'exam_name_id' => $examName->id,
+        'exam_type_id' => $examTypeTwo->id,
+        'exam_part_id' => $examPartTwo->id,
         'school_id' => $school->id,
         'session_id' => $session->id,
         'is_active' => true,
@@ -58,9 +77,6 @@ it('creates, finalizes, reopens, and deletes an exam date schedule', function ()
     ]);
     $half = ExamHalf::query()->create([
         'name' => 'Morning',
-        'exam_name_id' => $examName->id,
-        'exam_type_id' => $examType->id,
-        'exam_part_id' => $examPart->id,
         'school_id' => $school->id,
         'session_id' => $session->id,
         'is_active' => true,
@@ -75,14 +91,22 @@ it('creates, finalizes, reopens, and deletes an exam date schedule', function ()
         ->set('name', 'Mathematics paper')
         ->set('exam_mode_id', $examMode->id)
         ->set('shreny_id', $shreny->id)
-        ->set('section_id', $section->id)
+        ->set('section_ids', [$section->id, $sectionB->id])
         ->set('subject_id', $subject->id)
         ->set('exam_half_id', $half->id)
         ->set('exam_date', '2026-10-12')
         ->call('save')
-        ->assertHasNoErrors();
+        ->assertHasNoErrors()
+        ->assertSee('Allowed subjects by Shreny')
+        ->assertSee('Mathematics')
+        ->call('create')
+        ->set('shreny_id', $shreny->id)
+        ->assertDontSee('<option value="' . $subject->id . '">Mathematics</option>');
 
-    $schedule = ExamDateSchedule::query()->sole();
+    $schedules = ExamDateSchedule::query()->get();
+    $schedule = $schedules->first();
+    expect($schedules)->toHaveCount(2)
+        ->and($schedules->pluck('section_id')->sort()->values()->all())->toBe([$section->id, $sectionB->id]);
     expect($schedule->exam_name_id)->toBe($examName->id)
         ->and($schedule->subject_id)->toBe($subject->id)
         ->and($schedule->exam_half_id)->toBe($half->id)
@@ -92,6 +116,12 @@ it('creates, finalizes, reopens, and deletes an exam date schedule', function ()
     expect($schedule->fresh()->is_finalized)->toBeTrue();
     $component->call('reopenSchedule')->assertHasNoErrors();
     expect($schedule->fresh()->is_finalized)->toBeFalse();
-    $component->call('delete', $schedule->id)->assertHasNoErrors();
+    foreach ($schedules as $scheduledRecord) {
+        $component->call('delete', $scheduledRecord->id)->assertHasNoErrors();
+    }
+    $component->set('selectedCombinationKey', "{$examName->id}:{$examTypeTwo->id}:{$examPartTwo->id}")
+        ->assertSet('selectedCombinationKey', "{$examName->id}:{$examTypeTwo->id}:{$examPartTwo->id}")
+        ->assertSet('showModal', false)
+        ->assertSet('shreny_id', null);
     expect(ExamDateSchedule::query()->count())->toBe(0);
 });

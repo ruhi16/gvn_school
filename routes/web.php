@@ -4,7 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Models\Notice;
 use App\Models\ExamRoom;
+use App\Models\PhotoGallery;
+use App\Models\QuestionArchive;
 use App\Models\Session;
+use App\Models\Shreny;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ShrenySection;
 use App\Models\StudentDb;
@@ -23,7 +26,21 @@ Route::get('/', function () {
         ->orderByDesc('id')
         ->get();
 
-    return view('welcome', compact('notices'));
+    $session = Session::query()->where('is_active', true)->orderByDesc('id')->first();
+    $galleries = $session
+        ? PhotoGallery::query()->where('school_id', $session->school_id)->where('session_id', $session->id)
+            ->whereNotNull('image_path')->where('is_active', true)->where('is_deleted', false)
+            ->orderBy('category_name')->orderBy('order_id')->orderByDesc('id')->get()
+        : collect();
+    $questionArchives = $session
+        ? QuestionArchive::query()->where('school_id', $session->school_id)->where('session_id', $session->id)
+            ->where('is_active', true)->where('is_deleted', false)
+            ->with(['shreny', 'subject', 'examName', 'examType', 'examPart'])
+            ->orderBy('shreny_id')->orderBy('exam_name_id')->orderBy('exam_type_id')->orderBy('exam_part_id')->orderBy('subject_id')->get()
+        : collect();
+    $archiveClasses = $questionArchives->pluck('shreny')->filter()->unique('id')->values();
+
+    return view('welcome', compact('notices', 'session', 'galleries', 'questionArchives', 'archiveClasses'));
 });
 
 Route::get('/dashboard', function () {

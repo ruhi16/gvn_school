@@ -18,11 +18,17 @@ class StudentCr extends Model
         'is_promoted',
         'is_active',
         'remarks',
+        'is_editable',
+        'is_deleted',
+        'is_finalized',
     ];
 
     protected $casts = [
         'is_promoted' => 'boolean',
         'is_active' => 'boolean',
+        'is_editable' => 'boolean',
+        'is_deleted' => 'boolean',
+        'is_finalized' => 'boolean',
     ];
 
     public function student(): BelongsTo

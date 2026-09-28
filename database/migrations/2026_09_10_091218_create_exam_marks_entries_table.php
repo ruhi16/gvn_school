@@ -15,17 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
-
-            $table->integer('shreny_id')->nullable();
-            $table->integer('section_id')->nullable();
-
+            
             $table->integer('exam_name_id')->nullable();
             $table->integer('exam_type_id')->nullable();
             $table->integer('exam_part_id')->nullable();
+            
+            $table->integer('shreny_id')->nullable();
+            $table->integer('section_id')->nullable();
 
             $table->integer('subject_id')->nullable();
             $table->integer('student_cr_id')->nullable();
             $table->integer('obtained_marks')->nullable();
+            $table->string('obtained_grade')->nullable();
 
             
             $table->boolean('is_issued')->default(false);

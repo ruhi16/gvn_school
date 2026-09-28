@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\StudentDb;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -25,21 +24,17 @@ class StudentDbComp extends Component
     public function delete(int $id): void
     {
         if (!$this->canMutate()) return;
-        $student = StudentDb::findOrFail($id);
-
-        foreach (['dp_img_ref', 'dob_cert_img_ref', 'aadhaar_img_ref'] as $column) {
-            if ($student->{$column}) {
-                Storage::disk('public')->delete($student->{$column});
-            }
-        }
-
-        $student->delete();
+        $student = StudentDb::query()->where('school_id', $this->activeSchoolId())
+            ->where('is_deleted', false)->findOrFail($id);
+        $student->update(['is_deleted' => true]);
         session()->flash('success', 'Student deleted.');
     }
 
     public function render()
     {
         $students = StudentDb::query()
+            ->where('school_id', $this->activeSchoolId())
+            ->where('is_deleted', false)
             ->when($this->search, fn($query) => $query->where(function ($query) {
                 $query->where('name', 'like', "%{$this->search}%")
                     ->orWhere('fname', 'like', "%{$this->search}%")

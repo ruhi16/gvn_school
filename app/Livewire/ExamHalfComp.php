@@ -4,10 +4,6 @@ namespace App\Livewire;
 
 use App\Livewire\Concerns\UsesActiveSchoolSession;
 use App\Models\ExamHalf;
-use App\Models\ExamName;
-use App\Models\ExamPart;
-use App\Models\ExamShrenyPartFmPm;
-use App\Models\ExamType;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -16,10 +12,15 @@ class ExamHalfComp extends Component
     use UsesActiveSchoolSession;
 
     private const DAYS = [
-        'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
     ];
 
-    public string $selectedCombinationKey = '';
     public string $name = '';
     public string $description = '';
     public string $start_time = '';
@@ -31,19 +32,14 @@ class ExamHalfComp extends Component
     public bool $showModal = false;
     public bool $is_active = true;
 
-    public function updatedSelectedCombinationKey(): void
-    {
-        $this->resetValidation();
-    }
-
     public function create(): void
     {
         if (!$this->canMutate()) {
             return;
         }
 
-        if (!$this->selectedCombination()) {
-            $this->addError('selectedCombinationKey', 'Choose a configured exam combination first.');
+        if (!$this->activeSession() || !$this->activeSchoolId()) {
+            session()->flash('error', 'An active school session is required.');
             return;
         }
 
@@ -77,8 +73,8 @@ class ExamHalfComp extends Component
             return;
         }
 
-        if (!$this->selectedCombination()) {
-            $this->addError('selectedCombinationKey', 'Choose a configured exam combination first.');
+        if (!$this->activeSession() || !$this->activeSchoolId()) {
+            $this->addError('name', 'An active school session is required.');
             return;
         }
 
@@ -101,19 +97,18 @@ class ExamHalfComp extends Component
 
         $session = $this->activeSession();
         if (!$session || !$this->activeSchoolId()) {
-            $this->addError('selectedCombinationKey', 'An active school session is required.');
+            $this->addError('name', 'An active school session is required.');
             return;
         }
 
-        [$examNameId, $examTypeId, $examPartId] = $this->combinationIds();
         $editing = $this->recordId !== null;
+        if ($editing) {
+            $this->selectedHalves()->findOrFail($this->recordId);
+        }
 
         ExamHalf::query()->updateOrCreate(
             ['id' => $this->recordId],
             $data + [
-                'exam_name_id' => $examNameId,
-                'exam_type_id' => $examTypeId,
-                'exam_part_id' => $examPartId,
                 'school_id' => $this->activeSchoolId(),
                 'session_id' => $session->id,
             ]
@@ -162,7 +157,7 @@ class ExamHalfComp extends Component
         return trim((($hours ? "{$hours} hr" . ($hours === 1 ? '' : 's') : '')
             . ($hours && $remainingMinutes ? ' ' : '')
             . ($remainingMinutes ? "{$remainingMinutes} min" : '')
-            ) ?: '0 min');
+        ) ?: '0 min');
     }
 
     private function resetForm(): void
@@ -172,97 +167,28 @@ class ExamHalfComp extends Component
         $this->resetValidation();
     }
 
-    private function combinationIds(): array
-    {
-        return array_map('intval', explode(':', $this->selectedCombinationKey));
-    }
-
-    private function selectedCombination(): bool
-    {
-        if (!$this->activeSession() || !$this->activeSchoolId() || count($this->combinationIds()) !== 3) {
-            return false;
-        }
-
-        [$examNameId, $examTypeId, $examPartId] = $this->combinationIds();
-
-        return $this->configurationQuery()
-            ->where('is_active', true)
-            ->whereNull('shreny_id')
-            ->whereNull('subject_id')
-            ->where('exam_name_id', $examNameId)
-            ->where('exam_type_id', $examTypeId)
-            ->where('exam_part_id', $examPartId)
-            ->exists();
-    }
-
     private function selectedHalves()
     {
-        if (!$this->activeSession() || !$this->activeSchoolId() || !$this->selectedCombination()) {
+        if (!$this->activeSession() || !$this->activeSchoolId()) {
             return ExamHalf::query()->whereRaw('1 = 0');
         }
 
-        [$examNameId, $examTypeId, $examPartId] = $this->combinationIds();
-
         return ExamHalf::query()
             ->where('school_id', $this->activeSchoolId())
-            ->where('session_id', $this->activeSession()->id)
-            ->where('exam_name_id', $examNameId)
-            ->where('exam_type_id', $examTypeId)
-            ->where('exam_part_id', $examPartId);
-    }
-
-    private function configurationQuery()
-    {
-        return ExamShrenyPartFmPm::query()
-            ->where(function ($query) {
-                $query->where('school_id', $this->activeSchoolId())->orWhereNull('school_id');
-            })
-            ->where(function ($query) {
-                $query->where('session_id', $this->activeSession()?->id)->orWhereNull('session_id');
-            });
+            ->where('session_id', $this->activeSession()->id);
     }
 
     public function render()
     {
         $session = $this->activeSession();
-        $configurations = $session && $this->activeSchoolId()
-            ? $this->configurationQuery()
-                ->where('is_active', true)
-                ->whereNull('shreny_id')
-                ->whereNull('subject_id')
-                ->whereNotNull('exam_name_id')
-                ->whereNotNull('exam_type_id')
-                ->whereNotNull('exam_part_id')
-                ->get()
-                ->unique(fn ($configuration) => "{$configuration->exam_name_id}:{$configuration->exam_type_id}:{$configuration->exam_part_id}")
-            : collect();
-
-        $examNames = ExamName::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)->get()->keyBy('id');
-        $examTypes = ExamType::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)->get()->keyBy('id');
-        $examParts = ExamPart::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)->get()->keyBy('id');
-        $combinations = $configurations->filter(fn ($configuration) =>
-            $examNames->has($configuration->exam_name_id)
-            && $examTypes->has($configuration->exam_type_id)
-            && $examParts->has($configuration->exam_part_id)
-        )->map(function ($configuration) use ($examNames, $examTypes, $examParts) {
-            $key = "{$configuration->exam_name_id}:{$configuration->exam_type_id}:{$configuration->exam_part_id}";
-
-            return [
-                'key' => $key,
-                'label' => $examNames[$configuration->exam_name_id]->name . ' / '
-                    . $examTypes[$configuration->exam_type_id]->name . ' / '
-                    . $examParts[$configuration->exam_part_id]->name,
-            ];
-        })->values();
-
         $records = $this->selectedHalves()->orderBy('order_id')->orderBy('start_time')->orderBy('name')->get();
 
         return view('livewire.exam-half-comp', [
-            'combinations' => $combinations,
             'records' => $records,
             'days' => self::DAYS,
             'durationPreview' => $this->durationPreview,
             'hasActiveSession' => $session !== null,
+            'activeSessionName' => $session?->name,
         ]);
     }
 }

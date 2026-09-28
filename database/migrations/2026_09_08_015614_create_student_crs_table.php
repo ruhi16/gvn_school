@@ -22,13 +22,17 @@ return new class extends Migration
             $table->integer('session_id')->nullable()->default(null);
 
             $table->integer('order_id')->nullable();
-            $table->boolean('is_promoted')->default(true);
+            $table->boolean('is_promoted')->default(true)->nullable();
 
             $table->boolean('is_active')->default(true);
             $table->string('remarks')->nullable();
             $table->boolean('is_editable')->default(false);
             $table->boolean('is_deleted')->default(false);
             $table->boolean('is_finalized')->default(false);
+            $table->unique(
+                ['curr_shreny_id', 'curr_section_id', 'curr_roll_no'],
+                'student_crs_shreny_section_roll_unique'
+            );
             $table->timestamps();
         });
     }

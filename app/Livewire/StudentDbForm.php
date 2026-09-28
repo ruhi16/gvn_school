@@ -28,10 +28,13 @@ class StudentDbForm extends Component
     public function mount(?int $studentId = null): void
     {
         if ($studentId === null) {
+            $this->school_id = $this->activeSchoolId();
+            $this->session_id = $this->activeSession()?->id;
             return;
         }
 
-        $student = StudentDb::findOrFail($studentId);
+        $student = StudentDb::query()->where('school_id', $this->activeSchoolId())
+            ->where('is_deleted', false)->findOrFail($studentId);
         $this->studentId = $student->id;
 
         foreach ([
@@ -96,8 +99,6 @@ class StudentDbForm extends Component
             'adm_shreny_id' => ['nullable', 'integer'],
             'adm_section_id' => ['nullable', 'integer'],
             'order_id' => ['nullable', 'integer'],
-            'school_id' => ['nullable', 'integer'],
-            'session_id' => ['nullable', 'integer'],
             'is_active' => ['boolean'],
             'remarks' => ['nullable', 'string', 'max:255'],
             'dpImage' => ['nullable', 'image', 'max:5120'],
@@ -105,9 +106,19 @@ class StudentDbForm extends Component
             'aadhaarImage' => ['nullable', 'image', 'max:5120'],
         ]);
 
+        $schoolId = $this->activeSchoolId();
+        $sessionId = $this->activeSession()?->id;
+        abort_unless($schoolId && $sessionId, 422, 'An active school session is required.');
+
+        unset($data['dpImage'], $data['dobCertificate'], $data['aadhaarImage']);
         $student = $this->studentId
-            ? tap(StudentDb::findOrFail($this->studentId))->update($data)
-            : StudentDb::create($data);
+            ? StudentDb::query()->where('school_id', $schoolId)->where('is_deleted', false)->findOrFail($this->studentId)
+            : new StudentDb();
+        if (!$this->studentId) {
+            $data['school_id'] = $schoolId;
+            $data['session_id'] = $sessionId;
+        }
+        $student->fill($data)->save();
         $folder = 'student-dbs/' . $student->id;
         $this->storeImage($student, 'dpImage', 'dp_img_ref', $folder . '/dp');
         $this->storeImage($student, 'dobCertificate', 'dob_cert_img_ref', $folder . '/dob');

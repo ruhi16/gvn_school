@@ -63,7 +63,7 @@ class StudentdbSeeder extends Seeder
             }
 
             DB::table('student_dbs')->updateOrInsert(['email' => "student{$i}@example.com"], [
-                'name' => $name,
+                'name' => fake('en_IN')->firstName('female'),   //$name,
                 'dp_img_ref' => 'student-dbs/1/dp/' . $i . '.jpg',
                 'gender' => $gender,
                 'fname' => $fname,

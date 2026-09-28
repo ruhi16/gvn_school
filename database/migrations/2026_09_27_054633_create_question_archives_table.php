@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exam_shreny_subject_grades', function (Blueprint $table) {
+        Schema::create('question_archives', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
@@ -21,18 +21,22 @@ return new class extends Migration
             $table->integer('exam_part_id')->nullable();
             
             $table->integer('shreny_id')->nullable();
-            $table->integer('subject_type_id')->nullable();
-            $table->integer('exam_grade_id')->nullable();
+            $table->integer('section_id')->nullable();
+
+            $table->integer('subject_id')->nullable();
+            $table->string('question_paper_pdf_ref')->nullable();
+            $table->string('question_paper_img_ref')->nullable();
+            $table->string('question_paper_text_ref')->nullable();
 
 
             $table->integer('order_id')->nullable();
             $table->integer('school_id')->nullable();
             $table->integer('session_id')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('remarks')->nullable();   
+            $table->string('remarks')->nullable(); 
             $table->boolean('is_editable')->default(false);
             $table->boolean('is_deleted')->default(false);
-            $table->boolean('is_finalized')->default(false);         
+            $table->boolean('is_finalized')->default(false);
             $table->timestamps();
         });
     }
@@ -42,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exam_shreny_subject_grades');
+        Schema::dropIfExists('question_archives');
     }
 };

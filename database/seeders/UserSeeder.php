@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\ExamGrade;
+use App\Models\ExamHalf;
 use App\Models\ExamMode;
 use App\Models\ExamName;
 use App\Models\ExamPart;
+use App\Models\ExamRoom;
 use App\Models\ExamType;
 use App\Models\School;
 use App\Models\Section;
@@ -146,6 +148,16 @@ class UserSeeder extends Seeder
                     ['Practical', 'Practical Exam'],
                     ['Project', 'Project Exam'],
                     ['Assignment', 'Assignment Exam'],
+                ],
+                ExamRoom::class => [
+                    ['Room 101', 'First Floor Room'],
+                    ['Room 102', 'First Floor Room'],
+                    ['Room 201', 'Second Floor Room'],
+                    ['Room 202', 'Second Floor Room'],
+                ],
+                ExamHalf::class => [
+                    ['First', 'First Half of the Exam'],
+                    ['Second', 'Second Half of the Exam'],
                 ],
             ];
             foreach ($catalogs as $modelClass => $items) {

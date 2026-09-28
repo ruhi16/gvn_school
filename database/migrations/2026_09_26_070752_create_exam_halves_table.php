@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
 
-            $table->integer('exam_name_id')->nullable();
-            $table->integer('exam_type_id')->nullable();
-            $table->integer('exam_part_id')->nullable();
+            // $table->integer('exam_name_id')->nullable();
+            // $table->integer('exam_type_id')->nullable();
+            // $table->integer('exam_part_id')->nullable();
 
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();  

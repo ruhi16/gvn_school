@@ -1,14 +1,28 @@
 @php
 $panelTitles = [
 'overview' => 'Overview', 'students' => 'Student admissions', 'student-crs' => 'Shreny & Section students',
-'school-management' => 'School Management', 'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies', 'section' => 'Sections',
+'school-management' => 'School Management', 'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies',
+'section' => 'Sections',
 'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
 'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
 'exam-names' => 'Exam names', 'exam-types' => 'Exam types', 'exam-parts' => 'Exam parts', 'exam-modes' => 'Exam modes',
-'exam-grades' => 'Exam grades', 'exam-combinations' => 'Exam combination settings', 'exam-marks-settings' => 'Marks
+'exam-grades' => 'Exam grades', 'exam-combinations' => 'Exam combination', 'exam-marks-settings' => 'Marks
 settings',
 'exam-marks-entry' => 'Marks entry', 'exam-marks-register' => 'Marks register', 'exam-marks-sheets' => 'Marks sheets',
-'exam-script-distribution' => 'Script distribution', 'exam-date-schedules' => 'Exam date schedule', 'notices' => 'Notices', 'user-profile' => 'User Profile',
+'exam-script-distribution' => 'Script distribution', 'exam-date-schedules' => 'Exam date schedule', 'notices' =>
+'Notices', 'photo-gallery' => 'Photo gallery', 'question-paper-archive' => 'Question paper archive', 'user-profile' =>
+'User Profile',
+];
+$studentPanels = [['students', 'StudentDB (New Adm)'], ['student-crs', 'StudentCR']];
+$academicPanels = [['shreny-sections', 'Shreny sections'], ['shreny-subjects', 'Shreny subjects']];
+$examPanels = [
+    ['exam-combinations', 'Exam Terms Subjects'], ['exam-marks-settings', 'Exam FM / PM'],
+    ['exam-date-schedules', 'Exam date schedule'], ['exam-script-distribution', 'Script distribution'],
+    ['exam-marks-entry', 'Marks entry'], ['exam-marks-register', 'Mark register'], ['exam-marks-sheets', 'Mark sheet'],
+];
+$dashboardStats = [
+    ['Schools', $totalSchools, 'text-cyan-600'], ['Users', $totalUsers, 'text-violet-600'],
+    ['Teachers', $totalTeachers, 'text-amber-600'], ['Students', $totalStudents, 'text-emerald-600'],
 ];
 @endphp
 <div class="min-h-[calc(100vh-8rem)] bg-slate-100 text-slate-900">
@@ -28,36 +42,51 @@ settings',
                     <span>General overview</span></button>
 
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Students</p>
-                @foreach ([['students', 'StudentDB (New Adm)'], ['student-crs', 'StudentCR']] as [$panel, $label])
-                    <button wire:click="selectPanel('{{ $panel }}')"
-                        class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
+                @foreach ($studentPanels as [$panel, $label])
+                <button wire:click="selectPanel('{{ $panel }}')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{
+                    $label }}</button>
                 @endforeach
 
                 <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">School</p>
                 <button wire:click="selectPanel('school-management')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'school-management' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">School management</button>
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'school-management' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">School
+                    management</button>
                 <button wire:click="selectPanel('notices')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'notices' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Notices</button>
+                <button wire:click="selectPanel('photo-gallery')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'photo-gallery' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Photo
+                    gallery</button>
+                <button wire:click="selectPanel('question-paper-archive')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'question-paper-archive' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Question
+                    paper archive</button>
 
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Academic combinations</p>
-                @foreach ([['shreny-sections', 'Shreny sections'], ['shreny-subjects', 'Shreny subjects']] as [$panel, $label])
-                    <button wire:click="selectPanel('{{ $panel }}')"
-                        class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">Academic
+                    combinations</p>
+                @foreach ($academicPanels as [$panel, $label])
+                <button wire:click="selectPanel('{{ $panel }}')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{
+                    $label }}</button>
                 @endforeach
 
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-cyan-400">Exam overview</p>
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-cyan-400">Exam overview
+                </p>
                 <button wire:click="selectPanel('exam-overview')"
                     class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'exam-overview' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Overview</button>
-                @foreach ([['exam-combinations', 'Exam subjects'], ['exam-marks-settings', 'Exam FM / PM'], ['exam-date-schedules', 'Exam date schedule'], ['exam-script-distribution', 'Script distribution'], ['exam-marks-entry', 'Marks entry'], ['exam-marks-register', 'Mark register'], ['exam-marks-sheets', 'Mark sheet']] as [$panel, $label])
-                    <button wire:click="selectPanel('{{ $panel }}')"
-                        class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{ $label }}</button>
+                @foreach ($examPanels as [$panel, $label])
+                <button wire:click="selectPanel('{{ $panel }}')"
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === $panel ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">{{
+                    $label }}</button>
                 @endforeach
                 <a href="{{ route('admin.exam-rooms') }}"
-                    class="block rounded px-3 py-2 {{ request()->routeIs('admin.exam-rooms*') ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam room allotment</a>
+                    class="block rounded px-3 py-2 {{ request()->routeIs('admin.exam-rooms*') ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">Exam
+                    room allotment</a>
 
-                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">System settings</p>
+                <p class="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-slate-600">System settings
+                </p>
                 <button wire:click="selectPanel('user-profile')"
-                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'user-profile' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">User Profile</button>
+                    class="w-full rounded px-3 py-2 text-left {{ $activePanel === 'user-profile' ? 'bg-cyan-950 font-semibold text-cyan-300' : 'hover:bg-slate-900' }}">User
+                    Profile</button>
             </nav>
         </aside>
         <section class="min-w-0 flex-1">
@@ -66,30 +95,37 @@ settings',
                     <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-600">Administration</p>
                     <h1 class="text-lg font-semibold tracking-tight">{{ $panelTitles[$activePanel] ?? 'Admin panel' }}
                     </h1>
-                </div><div class="flex items-center gap-2"><button type="button" wire:click="toggleMutations" role="switch" aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}" class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{ $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button><span class="rounded-full bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-700">ADMIN</span></div>
+                </div>
+                <div class="flex items-center gap-2"><button type="button" wire:click="toggleMutations" role="switch"
+                        aria-checked="{{ $mutationsEnabled ? 'true' : 'false' }}"
+                        class="rounded border px-3 py-2 text-xs font-semibold {{ $mutationsEnabled ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-600' }}">{{
+                        $mutationsEnabled ? 'Editing enabled' : 'Enable editing' }}</button><span
+                        class="rounded-full bg-cyan-50 px-2 py-1 text-xs font-semibold text-cyan-700">ADMIN</span></div>
             </header>
             <main class="space-y-5 p-5">
                 @if($activePanel === 'overview' || $activePanel === 'exam-overview')
-                    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                        @foreach ([['Schools', $totalSchools, 'text-cyan-600'], ['Users', $totalUsers, 'text-violet-600'], ['Teachers', $totalTeachers, 'text-amber-600'], ['Students', $totalStudents, 'text-emerald-600']] as [$label, $value, $color])
-                            <div class="rounded-lg border border-slate-200 bg-white p-4">
-                                <p class="text-[11px] text-slate-500">{{ $label }}</p>
-                                <p class="mt-1 text-2xl font-semibold {{ $color }}">{{ $value }}</p>
-                            </div>
-                        @endforeach
+                <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    @foreach ($dashboardStats as [$label, $value, $color])
+                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                        <p class="text-[11px] text-slate-500">{{ $label }}</p>
+                        <p class="mt-1 text-2xl font-semibold {{ $color }}">{{ $value }}</p>
                     </div>
+                    @endforeach
+                </div>
                 @endif
                 @if($activePanel === 'overview')
-                    <div class="grid gap-4 lg:grid-cols-2">
-                        <div class="rounded-lg border border-slate-200 bg-white p-4">
-                            <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">General settings</p>
-                            <p class="text-xs text-slate-600">Manage school setup, academic structure, staffing, and rooms from School management.</p>
-                        </div>
-                        <div class="rounded-lg border border-slate-200 bg-white p-4">
-                            <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Exam settings</p>
-                            <p class="text-xs text-slate-600">Basic definitions, exam structure, marks, modes, grades, and Shreny-subject combinations.</p>
-                        </div>
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">General settings</p>
+                        <p class="text-xs text-slate-600">Manage school setup, academic structure, staffing, and rooms
+                            from School management.</p>
                     </div>
+                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Exam settings</p>
+                        <p class="text-xs text-slate-600">Basic definitions, exam structure, marks, modes, grades, and
+                            Shreny-subject combinations.</p>
+                    </div>
+                </div>
                 @elseif($activePanel === 'students')
                 <livewire:student-db-comp />
                 @elseif($activePanel === 'student-crs')
@@ -110,14 +146,18 @@ settings',
                 <livewire:teacher-comp />
                 @elseif($activePanel === 'notices')
                 <livewire:notice-comp />
+                @elseif($activePanel === 'photo-gallery')
+                <livewire:photo-gallery-comp />
+                @elseif($activePanel === 'question-paper-archive')
+                <livewire:question-paper-archive-comp />
                 @elseif($activePanel === 'user-profile')
                 <livewire:profile-management-comp />
                 @elseif($activePanel === 'shreny-sections')
                 <livewire:shreny-section-comp />
                 @elseif($activePanel === 'shreny-subjects')
                 <livewire:shreny-subject-comp />
-                @elseif($activePanel === 'exam-basics') <div
-                    class="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
+                @elseif($activePanel === 'exam-basics')
+                <div class="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
                     <livewire:exam-name-comp />
                     <livewire:exam-type-comp />
                     <livewire:exam-part-comp />
@@ -136,7 +176,11 @@ settings',
                 <livewire:exam-grade-comp />
                 @elseif($activePanel === 'exam-overview')
                 <div class="space-y-6">
-                    <livewire:exam-settings />
+                    <livewire:exam-name-comp />
+                    <livewire:exam-type-comp />
+                    <livewire:exam-part-comp />
+                    <livewire:exam-mode-comp />
+                    <livewire:exam-grade-comp />
                     <livewire:exam-half-comp />
                 </div>
                 @elseif($activePanel === 'exam-combinations')

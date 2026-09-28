@@ -164,6 +164,88 @@
         </div>
     </section>
 
+    <!-- Photo Gallery Section -->
+    <section id="photo-gallery" class="py-16 bg-[#FDFBF7] border-b border-amber-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+                <div>
+                    <span class="text-sm font-bold uppercase tracking-wider text-orange-600">School life</span>
+                    <h2 class="font-brand font-bold text-3xl sm:text-4xl text-slate-800 mt-2">Photo Gallery</h2>
+                </div>
+                <p class="text-gray-500 text-sm">{{ $session?->name ?? 'Current school session' }}</p>
+            </div>
+            @forelse ($galleries->groupBy('category_name') as $categoryName => $categoryPhotos)
+                <section class="mb-8 last:mb-0">
+                    <h3 class="font-brand font-bold text-xl text-slate-800 mb-4">{{ $categoryName ?: 'School photos' }}</h3>
+                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                        @foreach ($categoryPhotos as $photo)
+                            <figure class="overflow-hidden rounded-lg border border-amber-100 bg-white shadow-sm">
+                                <a href="{{ Storage::url($photo->image_path) }}" target="_blank" rel="noopener noreferrer">
+                                    <img src="{{ Storage::url($photo->image_path) }}" alt="{{ $photo->image_alt_text ?: $photo->name }}" class="aspect-[4/3] w-full object-cover">
+                                </a>
+                                @if ($photo->image_caption || $photo->name)
+                                    <figcaption class="px-3 py-2 text-xs font-semibold text-slate-700">{{ $photo->image_caption ?: $photo->name }}</figcaption>
+                                @endif
+                            </figure>
+                        @endforeach
+                    </div>
+                </section>
+            @empty
+                <div class="rounded-lg border border-dashed border-amber-200 bg-white/70 p-8 text-center text-sm text-gray-500">No gallery photos are available for this session.</div>
+            @endforelse
+        </div>
+    </section>
+
+    <!-- Question Paper Archive Section -->
+    <section id="question-papers" class="py-16 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+                <div>
+                    <span class="text-sm font-bold uppercase tracking-wider text-cyan-700">Study resources</span>
+                    <h2 class="font-brand font-bold text-3xl sm:text-4xl text-slate-800 mt-2">Question Papers</h2>
+                </div>
+                <p class="text-gray-500 text-sm">{{ $session?->name ?? 'Current school session' }}</p>
+            </div>
+            @if ($archiveClasses->isNotEmpty())
+                <div role="tablist" aria-label="Question papers by class" class="flex flex-wrap gap-2 border-b border-slate-200">
+                    @foreach ($archiveClasses as $class)
+                        <button type="button" role="tab" aria-selected="{{ $loop->first ? 'true' : 'false' }}" aria-controls="paper-class-{{ $class->id }}" data-archive-tab="paper-class-{{ $class->id }}" class="border-b-2 px-4 py-2 text-sm font-semibold {{ $loop->first ? 'border-cyan-700 text-cyan-800' : 'border-transparent text-slate-500 hover:text-slate-900' }}">{{ $class->name }}</button>
+                    @endforeach
+                </div>
+                @foreach ($archiveClasses as $class)
+                    @php($classArchives = $questionArchives->where('shreny_id', $class->id))
+                    <div id="paper-class-{{ $class->id }}" role="tabpanel" class="space-y-5 pt-5 {{ $loop->first ? '' : 'hidden' }}" @if (!$loop->first) hidden @endif>
+                        @foreach ($classArchives->groupBy(fn ($paper) => $paper->exam_name_id . ':' . $paper->exam_type_id . ':' . $paper->exam_part_id) as $combinationPapers)
+                            @php($combinationPaper = $combinationPapers->first())
+                            <section class="border-l-4 border-cyan-600 pl-4">
+                                <h3 class="font-brand font-bold text-lg text-slate-800">{{ $combinationPaper->examName?->name }} / {{ $combinationPaper->examType?->name }} / {{ $combinationPaper->examPart?->name }}</h3>
+                                <div class="mt-3 divide-y divide-slate-100 border-y border-slate-100">
+                                    @foreach ($combinationPapers as $paper)
+                                        <article class="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+                                            <div><h4 class="font-semibold text-slate-800">{{ $paper->subject?->name ?? $paper->name }}</h4><p class="text-xs text-slate-500">{{ $paper->name }}{{ $paper->description ? ' · '.$paper->description : '' }}</p></div>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                @if ($paper->question_paper_pdf_ref)
+                                                    <a href="{{ Storage::url($paper->question_paper_pdf_ref) }}" download class="rounded-md bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700">Download PDF</a>
+                                                @endif
+                                                @if ($paper->question_paper_img_ref)
+                                                    <a href="{{ Storage::url($paper->question_paper_img_ref) }}" target="_blank" rel="noopener noreferrer" aria-label="View {{ $paper->name }} image">
+                                                        <img src="{{ Storage::url($paper->question_paper_img_ref) }}" alt="{{ $paper->name }}" class="h-16 w-20 rounded border border-slate-200 object-cover">
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </article>
+                                    @endforeach
+                                </div>
+                            </section>
+                        @endforeach
+                    </div>
+                @endforeach
+            @else
+                <div class="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">No question papers are available for this session.</div>
+            @endif
+        </div>
+    </section>
+
     <!-- Core Features Section -->
     <section id="features" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
@@ -200,6 +282,29 @@
             <p class="text-sm">&copy; {{ date('Y') }} Nursery Management System. Built securely with Laravel 12.</p>
         </div>
     </footer>
+
+    <script>
+        document.querySelectorAll('[data-archive-tab]').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                const section = tab.closest('#question-papers');
+                section.querySelectorAll('[data-archive-tab]').forEach((item) => {
+                    item.setAttribute('aria-selected', 'false');
+                    item.classList.remove('border-cyan-700', 'text-cyan-800');
+                    item.classList.add('border-transparent', 'text-slate-500');
+                });
+                section.querySelectorAll('[role="tabpanel"]').forEach((panel) => {
+                    panel.hidden = true;
+                    panel.classList.add('hidden');
+                });
+                tab.setAttribute('aria-selected', 'true');
+                tab.classList.add('border-cyan-700', 'text-cyan-800');
+                tab.classList.remove('border-transparent', 'text-slate-500');
+                const panel = document.getElementById(tab.dataset.archiveTab);
+                panel.hidden = false;
+                panel.classList.remove('hidden');
+            });
+        });
+    </script>
 
 </body>
 </html>

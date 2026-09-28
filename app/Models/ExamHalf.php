@@ -9,9 +9,6 @@ class ExamHalf extends Model
     protected $fillable = [
         'name',
         'description',
-        'exam_name_id',
-        'exam_type_id',
-        'exam_part_id',
         'start_time',
         'end_time',
         'active_exam_days',
@@ -20,10 +17,16 @@ class ExamHalf extends Model
         'session_id',
         'is_active',
         'remarks',
+        'is_editable',
+        'is_deleted',
+        'is_finalized',
     ];
 
     protected $casts = [
         'active_exam_days' => 'array',
         'is_active' => 'boolean',
+        'is_editable' => 'boolean',
+        'is_deleted' => 'boolean',
+        'is_finalized' => 'boolean',
     ];
 }

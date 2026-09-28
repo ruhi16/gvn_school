@@ -25,7 +25,7 @@ class ExamDateScheduleComp extends Component
     public ?int $recordId = null;
     public ?int $exam_mode_id = null;
     public ?int $shreny_id = null;
-    public ?int $section_id = null;
+    public array $section_ids = [];
     public ?int $subject_id = null;
     public ?int $exam_half_id = null;
     public ?int $order_id = null;
@@ -38,21 +38,22 @@ class ExamDateScheduleComp extends Component
 
     public function updatedSelectedCombinationKey(): void
     {
+        $this->resetForm();
+        $this->showModal = false;
         $this->resetValidation();
     }
 
     public function updatedShrenyId(): void
     {
-        $this->section_id = null;
+        $this->section_ids = [];
         $this->subject_id = null;
-        $this->resetValidation('section_id');
+        $this->resetValidation('section_ids');
         $this->resetValidation('subject_id');
     }
 
-    public function updatedSectionId(): void
+    public function updatedSectionIds(): void
     {
-        $this->subject_id = null;
-        $this->resetValidation('subject_id');
+        $this->resetValidation('section_ids');
     }
 
     public function create(): void
@@ -89,10 +90,10 @@ class ExamDateScheduleComp extends Component
         $this->description = $record->description ?? '';
         $this->exam_mode_id = $record->exam_mode_id;
         $this->shreny_id = $record->shreny_id;
-        $this->section_id = $record->section_id;
+        $this->section_ids = [$record->section_id];
         $this->subject_id = $record->subject_id;
         $this->exam_half_id = $record->exam_half_id;
-        $this->exam_date = $record->exam_date?->format('Y-m-d') ?? '';
+        $this->exam_date = $record->getRawOriginal('exam_date') ?? '';
         $this->order_id = $record->order_id;
         $this->is_active = $record->is_active;
         $this->remarks = $record->remarks ?? '';
@@ -119,7 +120,8 @@ class ExamDateScheduleComp extends Component
             'description' => ['nullable', 'string', 'max:255'],
             'exam_mode_id' => ['required', 'integer'],
             'shreny_id' => ['required', 'integer'],
-            'section_id' => ['required', 'integer'],
+            'section_ids' => ['required', 'array', 'min:1'],
+            'section_ids.*' => ['required', 'integer', 'distinct'],
             'subject_id' => ['required', 'integer'],
             'exam_half_id' => ['required', 'integer'],
             'exam_date' => ['required', 'date'],
@@ -135,11 +137,11 @@ class ExamDateScheduleComp extends Component
         abort_unless($session && $schoolId, 422, 'An active school session is required.');
 
         $this->availableModes()->findOrFail($data['exam_mode_id']);
-        $groupMapping = $this->availableGroups()->first(fn ($mapping) =>
-            (int) $mapping->shreny_id === (int) $data['shreny_id']
-            && (int) $mapping->section_id === (int) $data['section_id']
-        );
-        abort_unless($groupMapping, 422, 'Choose an active Shreny-Section mapping.');
+        $sectionIds = array_map('intval', $data['section_ids']);
+        $validSectionIds = $this->availableGroups()
+            ->where('shreny_id', (int) $data['shreny_id'])
+            ->pluck('section_id')->map(fn($id) => (int) $id)->all();
+        abort_unless(!array_diff($sectionIds, $validSectionIds), 422, 'Choose active sections assigned to this Shreny.');
         abort_unless($this->availableSubjects($data['shreny_id'])->contains('id', $data['subject_id']), 422, 'Choose a subject assigned to this exam and Shreny.');
         $this->availableHalves()->findOrFail($data['exam_half_id']);
 
@@ -148,17 +150,26 @@ class ExamDateScheduleComp extends Component
             $this->selectedSchedules()->findOrFail($this->recordId);
         }
 
-        ExamDateScheduleRecord::query()->updateOrCreate(
-            ['id' => $this->recordId],
-            $data + [
-                'exam_name_id' => $examNameId,
-                'exam_type_id' => $examTypeId,
-                'exam_part_id' => $examPartId,
-                'school_id' => $schoolId,
-                'session_id' => $session->id,
-                'is_finalized' => false,
-            ]
-        );
+        unset($data['section_ids']);
+        $attributes = $data + [
+            'exam_name_id' => $examNameId,
+            'exam_type_id' => $examTypeId,
+            'exam_part_id' => $examPartId,
+            'school_id' => $schoolId,
+            'session_id' => $session->id,
+            'is_finalized' => false,
+        ];
+
+        DB::transaction(function () use ($sectionIds, $attributes, $editing) {
+            foreach ($sectionIds as $index => $sectionId) {
+                $attributes['section_id'] = $sectionId;
+                if ($editing && $index === 0) {
+                    $this->selectedSchedules()->findOrFail($this->recordId)->update($attributes);
+                } else {
+                    ExamDateScheduleRecord::query()->create($attributes);
+                }
+            }
+        });
 
         $this->showModal = false;
         $this->resetForm();
@@ -209,8 +220,17 @@ class ExamDateScheduleComp extends Component
     private function resetForm(): void
     {
         $this->reset([
-            'recordId', 'exam_mode_id', 'shreny_id', 'section_id', 'subject_id',
-            'exam_half_id', 'order_id', 'name', 'description', 'exam_date', 'remarks',
+            'recordId',
+            'exam_mode_id',
+            'shreny_id',
+            'section_ids',
+            'subject_id',
+            'exam_half_id',
+            'order_id',
+            'name',
+            'description',
+            'exam_date',
+            'remarks',
         ]);
         $this->is_active = true;
         $this->resetValidation();
@@ -220,7 +240,7 @@ class ExamDateScheduleComp extends Component
     {
         $ids = explode(':', $this->selectedCombinationKey);
 
-        return count($ids) === 3 && collect($ids)->every(fn ($id) => ctype_digit($id) && (int) $id > 0)
+        return count($ids) === 3 && collect($ids)->every(fn($id) => ctype_digit($id) && (int) $id > 0)
             ? array_map('intval', $ids)
             : [];
     }
@@ -279,8 +299,7 @@ class ExamDateScheduleComp extends Component
             ->where(function ($query) {
                 $query->where('session_id', $this->activeSession()?->id)->orWhereNull('session_id');
             })
-            ->when($this->shreny_id, fn ($query) => $query->where('shreny_id', $this->shreny_id))
-            ->when($this->section_id, fn ($query) => $query->where('section_id', $this->section_id))
+            ->when($this->shreny_id, fn($query) => $query->where('shreny_id', $this->shreny_id))
             ->get();
     }
 
@@ -295,8 +314,20 @@ class ExamDateScheduleComp extends Component
             ->where('exam_name_id', $ids[0])->where('exam_type_id', $ids[1])->where('exam_part_id', $ids[2])
             ->where('shreny_id', $shrenyId)->whereNotNull('subject_id')->pluck('subject_id')->unique();
 
+        $scheduledSubjectIds = $this->selectedSchedules()
+            ->where('shreny_id', $shrenyId)
+            ->when($this->recordId, fn($query) => $query->where('id', '!=', $this->recordId))
+            ->pluck('subject_id')->unique();
+        if ($this->recordId) {
+            $currentSubjectId = $this->selectedSchedules()->whereKey($this->recordId)->value('subject_id');
+            if ($currentSubjectId) {
+                $scheduledSubjectIds = $scheduledSubjectIds->reject(fn($id) => (int) $id === (int) $currentSubjectId);
+            }
+        }
+
         return Subject::query()->where('school_id', $this->activeSchoolId())
-            ->where('is_active', true)->whereIn('id', $subjectIds)->orderBy('order_id')->orderBy('name')->get();
+            ->where('is_active', true)->whereIn('id', $subjectIds)->whereNotIn('id', $scheduledSubjectIds)
+            ->orderBy('order_id')->orderBy('name')->get();
     }
 
     private function availableModes()
@@ -306,14 +337,12 @@ class ExamDateScheduleComp extends Component
 
     private function availableHalves()
     {
-        $ids = $this->combinationIds();
-        if (count($ids) !== 3 || !$this->activeSession() || !$this->activeSchoolId()) {
+        if (!$this->activeSession() || !$this->activeSchoolId()) {
             return ExamHalf::query()->whereRaw('1 = 0');
         }
 
         return ExamHalf::query()->where('school_id', $this->activeSchoolId())
-            ->where('session_id', $this->activeSession()->id)->where('is_active', true)
-            ->where('exam_name_id', $ids[0])->where('exam_type_id', $ids[1])->where('exam_part_id', $ids[2]);
+            ->where('session_id', $this->activeSession()->id)->where('is_active', true);
     }
 
     private function scheduleGroups()
@@ -328,8 +357,8 @@ class ExamDateScheduleComp extends Component
         $shrenies = Shreny::query()->where('is_active', true)->get()->keyBy('id');
         $sections = Section::query()->where('is_active', true)->get()->keyBy('id');
 
-        return $mappings->filter(fn ($mapping) => $shrenies->has($mapping->shreny_id) && $sections->has($mapping->section_id))
-            ->map(fn ($mapping) => [
+        return $mappings->filter(fn($mapping) => $shrenies->has($mapping->shreny_id) && $sections->has($mapping->section_id))
+            ->map(fn($mapping) => [
                 'key' => "{$mapping->shreny_id}:{$mapping->section_id}",
                 'shreny_id' => (int) $mapping->shreny_id,
                 'section_id' => (int) $mapping->section_id,
@@ -339,19 +368,61 @@ class ExamDateScheduleComp extends Component
             ])->unique('key')->values();
     }
 
+    private function subjectStatusRows()
+    {
+        $ids = $this->combinationIds();
+        if (count($ids) !== 3) {
+            return collect();
+        }
+
+        [$examNameId, $examTypeId, $examPartId] = $ids;
+        $configurations = $this->configurationQuery()
+            ->where('exam_name_id', $examNameId)
+            ->where('exam_type_id', $examTypeId)
+            ->where('exam_part_id', $examPartId)
+            ->whereNotNull('shreny_id')
+            ->whereNotNull('subject_id')
+            ->get();
+
+        $shrenies = Shreny::query()->whereIn('id', $configurations->pluck('shreny_id')->unique())
+            ->get()->keyBy('id');
+        $subjects = Subject::query()->whereIn('id', $configurations->pluck('subject_id')->unique())
+            ->get()->keyBy('id');
+        $scheduled = $this->selectedSchedules()->get(['shreny_id', 'subject_id'])
+            ->mapWithKeys(fn($schedule) => ["{$schedule->shreny_id}:{$schedule->subject_id}" => true]);
+        $examName = ExamName::query()->find($examNameId);
+        $examType = ExamType::query()->find($examTypeId);
+        $examPart = ExamPart::query()->find($examPartId);
+
+        return $configurations
+            ->filter(fn($configuration) => $shrenies->has($configuration->shreny_id) && $subjects->has($configuration->subject_id))
+            ->groupBy('shreny_id')
+            ->map(fn($rows, $shrenyId) => [
+                'exam_name' => $examName?->name ?? '',
+                'exam_type' => $examType?->name ?? '',
+                'shreny' => $shrenies[$shrenyId]->name,
+                'exam_part' => $examPart?->name ?? '',
+                'subjects' => $rows->pluck('subject_id')->unique()->map(fn($subjectId) => [
+                    'id' => (int) $subjectId,
+                    'name' => $subjects[$subjectId]->name,
+                    'scheduled' => $scheduled->has("{$shrenyId}:{$subjectId}"),
+                ])->values(),
+            ])->values();
+    }
+
     public function render()
     {
         $session = $this->activeSession();
         $configurations = $session && $this->activeSchoolId()
             ? $this->configurationQuery()->whereNull('shreny_id')->whereNull('subject_id')
                 ->whereNotNull('exam_name_id')->whereNotNull('exam_type_id')->whereNotNull('exam_part_id')->get()
-                ->unique(fn ($row) => "{$row->exam_name_id}:{$row->exam_type_id}:{$row->exam_part_id}")
+                ->unique(fn($row) => "{$row->exam_name_id}:{$row->exam_type_id}:{$row->exam_part_id}")
             : collect();
         $names = ExamName::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)->get()->keyBy('id');
         $types = ExamType::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)->get()->keyBy('id');
         $parts = ExamPart::query()->where('school_id', $this->activeSchoolId())->where('is_active', true)->get()->keyBy('id');
-        $combinations = $configurations->filter(fn ($row) => $names->has($row->exam_name_id) && $types->has($row->exam_type_id) && $parts->has($row->exam_part_id))
-            ->map(fn ($row) => [
+        $combinations = $configurations->filter(fn($row) => $names->has($row->exam_name_id) && $types->has($row->exam_type_id) && $parts->has($row->exam_part_id))
+            ->map(fn($row) => [
                 'key' => "{$row->exam_name_id}:{$row->exam_type_id}:{$row->exam_part_id}",
                 'label' => $names[$row->exam_name_id]->name . ' / ' . $types[$row->exam_type_id]->name . ' / ' . $parts[$row->exam_part_id]->name,
             ])->values();
@@ -368,6 +439,7 @@ class ExamDateScheduleComp extends Component
         return view('livewire.exam-date-schedule-comp', [
             'combinations' => $combinations,
             'records' => $records,
+            'subjectStatusRows' => $this->selectedCombinationExists() ? $this->subjectStatusRows() : collect(),
             'groups' => $groups,
             'sections' => $sections,
             'subjects' => $this->availableSubjects($this->shreny_id),

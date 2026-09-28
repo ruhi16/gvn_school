@@ -28,7 +28,7 @@
             card']] as [$upload, $ref, $label])<label class="block"><span class="field-label">{{ $label
                 }}</span>@if($this->{$upload})<img src="{{ $this->{$upload}->temporaryUrl() }}"
                 class="mb-2 h-32 w-32 rounded border border-slate-200 object-cover" alt="Selected {{ strtolower($label) }} preview">
-                @elseif($this->{$ref})<a href="{{ Storage::disk('public')->url($this->{$ref}) }}"
+                @elseif($this->{$ref})<a href="{{ asset('storage/' . ltrim($this->{$ref}, '/')) }}"
                 target="_blank" class="mb-1 block text-[10px] text-cyan-700">View current image</a>@endif<input
                 wire:model="{{ $upload }}" type="file" accept="image/*" class="{{ $input }}">@error($upload)<span
                 class="field-error">{{ $message }}</span>@enderror</label>@endforeach</div>
@@ -59,10 +59,10 @@
                     class="field-label">Section ID</span><input wire:model="adm_section_id" type="number"
                     class="{{ $input }}"></label><label><span class="field-label">Order</span><input
                     wire:model="order_id" type="number" class="{{ $input }}"></label><label><span
-                    class="field-label">School ID</span><input wire:model="school_id" type="number"
+                    class="field-label">School ID</span><input wire:model="school_id" type="number" readonly
                     class="{{ $input }}"></label><label><span class="field-label">Session ID</span><input
-                    wire:model="session_id" type="number" class="{{ $input }}"></label><label
-                class="flex items-center gap-2 pt-5 text-xs"><input wire:model="is_active" type="checkbox"
+                    wire:model="session_id" type="number" readonly class="{{ $input }}"></label><label
+                    class="flex items-center gap-2 pt-5 text-xs"><input wire:model="is_active" type="checkbox"
                     class="rounded border-slate-300 text-cyan-600"> Active</label></div>
     </section>
     <section class="rounded border border-slate-200 bg-white p-4 shadow-sm lg:col-span-3"><label><span
