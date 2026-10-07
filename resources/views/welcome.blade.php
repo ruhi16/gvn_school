@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TinyHearts Academy - Nursery School Management System</title>
+    <title>Green Vally Nursary School - Nursery School Management System</title>
         <!-- Load assets via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Fonts -->
@@ -34,7 +34,7 @@
                 <!-- Logo / School Name -->
                 <div class="flex items-center gap-2">
                     <span class="text-3xl">🧸</span>
-                    <span class="font-brand font-bold text-2xl tracking-wide text-orange-500">TinyHearts <span class="text-amber-500">Academy</span></span>
+                    <span class="font-brand font-bold text-2xl tracking-wide text-orange-500">Green Vally Nursary <span class="text-amber-500">School</span></span>
                 </div>
 
                 <!-- Auth Navigation Options -->
@@ -74,7 +74,7 @@
                     Where Little Steps Lead to <span class="text-amber-500 underline decoration-wavy decoration-orange-300">Big Dreams</span>
                 </h1>
                 <p class="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0">
-                    Welcome to the TinyHearts Portal. Bridging the gap between tracking classrooms, assignments, child safety, and nursery updates seamlessly for parents and early educators.
+                    Welcome to the Green Vally Nursary Portal. Bridging the gap between tracking classrooms, assignments, child safety, and nursery updates seamlessly for parents and early educators.
                 </p>
                 
                 <!-- CTA Action Center -->
@@ -278,7 +278,7 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-            <p class="font-brand text-xl text-white">🧸 TinyHearts Academy</p>
+            <p class="font-brand text-xl text-white">🧸 Green Vally Nursary School</p>
             <p class="text-sm">&copy; {{ date('Y') }} Nursery Management System. Built securely with Laravel 12.</p>
         </div>
     </footer>

@@ -4,7 +4,8 @@ $panelTitles = [
 'school-management' => 'School Management', 'school' => 'School', 'session' => 'Sessions', 'shreny' => 'Shrenies',
 'section' => 'Sections',
 'subject' => 'Subjects', 'teacher' => 'Teachers', 'shreny-sections' => 'Shreny-Sections',
-'shreny-subjects' => 'Shreny-Subjects', 'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
+'shreny-subjects' => 'Shreny-Subjects', 'teacher-subjects' => 'Teacher subjects', 'shreny-teachers' => 'Shreny teachers',
+'exam-overview' => 'Exam overview', 'exam-basics' => 'Exam basic settings',
 'exam-names' => 'Exam names', 'exam-types' => 'Exam types', 'exam-parts' => 'Exam parts', 'exam-modes' => 'Exam modes',
 'exam-grades' => 'Exam grades', 'exam-combinations' => 'Exam combination', 'exam-marks-settings' => 'Marks
 settings',
@@ -14,7 +15,10 @@ settings',
 'User Profile',
 ];
 $studentPanels = [['students', 'StudentDB (New Adm)'], ['student-crs', 'StudentCR']];
-$academicPanels = [['shreny-sections', 'Shreny sections'], ['shreny-subjects', 'Shreny subjects']];
+$academicPanels = [
+    ['shreny-sections', 'Shreny sections'], ['shreny-subjects', 'Shreny subjects'],
+    ['teacher-subjects', 'Teacher subjects'], ['shreny-teachers', 'Shreny teachers'],
+];
 $examPanels = [
     ['exam-combinations', 'Exam Terms Subjects'], ['exam-marks-settings', 'Exam FM / PM'],
     ['exam-date-schedules', 'Exam date schedule'], ['exam-script-distribution', 'Script distribution'],
@@ -156,6 +160,10 @@ $dashboardStats = [
                 <livewire:shreny-section-comp />
                 @elseif($activePanel === 'shreny-subjects')
                 <livewire:shreny-subject-comp />
+                @elseif($activePanel === 'teacher-subjects')
+                <livewire:teacher-subject-comp />
+                @elseif($activePanel === 'shreny-teachers')
+                <livewire:shreny-teacher-comp />
                 @elseif($activePanel === 'exam-basics')
                 <div class="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
                     <livewire:exam-name-comp />

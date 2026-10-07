@@ -9,4 +9,9 @@ class Shreny extends Model
     protected $fillable = ['name', 'desc', 'order_id', 'school_id', 'session_id', 'is_active', 'remarks'];
 
     protected $casts = ['is_active' => 'boolean'];
+
+    public function shrenyTeachers()
+    {
+        return $this->hasMany(ShrenyTeachers::class);
+    }
 }
